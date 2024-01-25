@@ -1,0 +1,30 @@
+name: Run Backend Tests
+
+on:
+  push:
+    paths:
+      - backend/**
+      - .github/workflows/backkend-test.yml
+  pull_request:
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: Checkout Source code
+          uses: actions/checkout@v4
+        - uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: '8.0.x'
+        - name: Restore dependencies
+          run: dotnet restore
+        - name: Run Build
+          run: dotnet build backend --no-restore /p:ContinuousIntegrationBuild=true
+        - name: Run Test
+          run: dotnet test backend --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        - name: Upload Coverage
+          uses: codacy/codacy-coverage-reporter-action@v1
+          with:
+            api-token: ${{ secrets.CODACY_API_TOKEN }}
+            coverage-reports: backend/MangaMagnet.Core.Test/coverage.opencover.xml
