@@ -4,14 +4,13 @@ on:
   push:
     paths:
       - backend/**
-      - .github/workflows/backkend-test.yml
+      - .github/workflows/backend-test.yml
   pull_request:
 
 jobs:
     test:
         runs-on: ubuntu-latest
         steps:
-
         - name: Checkout Source code
           uses: actions/checkout@v4
         - uses: actions/setup-dotnet@v4
