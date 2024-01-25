@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaMagnet.Api", "MangaMag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaMagnet.Core", "MangaMagnet.Core\MangaMagnet.Core.csproj", "{46E703FE-0524-4336-8693-31315B09B889}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaMagnet.Core.Test", "MangaMagnet.Core.Test\MangaMagnet.Core.Test.csproj", "{CCBBFE74-014F-4FD2-8E3D-E4BF6D0B3959}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{46E703FE-0524-4336-8693-31315B09B889}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46E703FE-0524-4336-8693-31315B09B889}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46E703FE-0524-4336-8693-31315B09B889}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCBBFE74-014F-4FD2-8E3D-E4BF6D0B3959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCBBFE74-014F-4FD2-8E3D-E4BF6D0B3959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCBBFE74-014F-4FD2-8E3D-E4BF6D0B3959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCBBFE74-014F-4FD2-8E3D-E4BF6D0B3959}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
