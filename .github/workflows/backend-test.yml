@@ -8,7 +8,8 @@ on:
   pull_request:
 
 jobs:
-    test:
+    backend-test:
+        name: Backend Tests
         runs-on: ubuntu-latest
         steps:
         - name: Checkout Source code
