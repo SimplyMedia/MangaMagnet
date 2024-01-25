@@ -1,3 +1,4 @@
+using System.Data;
 using System.Net;
 using System.Text.Json.Serialization;
 using Asp.Versioning;
@@ -150,7 +151,11 @@ using (var scope = app.Services.GetService<IServiceScopeFactory>()?.CreateScope(
 
         if (dbContext?.Database.GetDbConnection() is NpgsqlConnection npgsqlConnection)
         {
-            await npgsqlConnection.OpenAsync();
+	        if (npgsqlConnection.State != ConnectionState.Open)
+	        {
+		        await npgsqlConnection.OpenAsync();
+	        }
+
             try
             {
                 await npgsqlConnection.ReloadTypesAsync();

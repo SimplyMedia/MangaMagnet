@@ -1,0 +1,45 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: mangamagnet
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mangamagnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mangamagnet -d mangamagnet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - data:/var/lib/postgresql/data
+
+  backend:
+    image: mangamagnet-backend
+    build:
+      context: ./backend
+      dockerfile: MangaMagnet.Api/Dockerfile
+    ports:
+      - 43524:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DOTNET_ConnectionStrings__PostgreSQLConnection: Host=postgres;Port=5432;Database=mangamagnet;Username=mangamagnet;Password=password
+      DOTNET_ConnectionStrings__QuartzPostgresSQLConnection: Host=postgres;Port=5432;Database=mangamagnet;Username=mangamagnet;Password=password;Search Path=quartz
+
+  frontend:
+    image: mangamagnet-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 43525:3000
+    depends_on:
+      - backend
+    environment:
+      API_BASE: http://backend:8080
+
+volumes:
+  data:
