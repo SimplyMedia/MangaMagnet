@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Manga;
+namespace MangaMagnet.Core.Metadata.Providers.MangaDex.Models;
 
 public record MangaDexResponse<T>(
         [property: JsonPropertyName("result")] string Result,

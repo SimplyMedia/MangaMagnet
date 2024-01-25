@@ -1,7 +1,8 @@
 ﻿using System.Collections.Specialized;
 using System.Net.Http.Json;
+using MangaMagnet.Core.Metadata.Providers.MangaDex.Models;
+using MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Chapter;
 using MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Manga;
-using MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Manga.Chapter;
 using MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Statistics;
 using MangaMagnet.Core.Util;
 using Microsoft.Extensions.Logging;

@@ -7,6 +7,7 @@ using MangaMagnet.Api;
 using MangaMagnet.Api.Configurations;
 using MangaMagnet.Api.Models.Database;
 using MangaMagnet.Api.Service;
+using MangaMagnet.Api.Swagger;
 using MangaMagnet.Core.Database;
 using MangaMagnet.Core.Metadata;
 using MangaMagnet.Core.Metadata.Providers.MangaDex;

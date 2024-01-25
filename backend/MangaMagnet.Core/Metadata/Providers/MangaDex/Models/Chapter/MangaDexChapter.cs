@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Manga.Chapter;
+namespace MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Chapter;
 
 public record MangaDexChapter(
 	[property: JsonPropertyName("id")] string Id,
