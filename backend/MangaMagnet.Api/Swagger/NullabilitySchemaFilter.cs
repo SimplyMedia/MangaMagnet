@@ -1,7 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace MangaMagnet.Api;
+namespace MangaMagnet.Api.Swagger;
 
 public class NullabilitySchemaFilter : ISchemaFilter
 {

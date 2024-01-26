@@ -1,4 +1,5 @@
 ﻿using MangaMagnet.Core.Database;
+using MangaMagnet.Core.Metadata.Providers.MangaDex.Models;
 using MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Manga;
 using MangaMagnet.Core.Metadata.Providers.MangaDex.Models.Statistics;
 
