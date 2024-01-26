@@ -5,68 +5,68 @@
 @tailwind utilities;
 
 :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
+	--foreground-rgb: 0, 0, 0;
+	--background-start-rgb: 214, 219, 220;
+	--background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        --foreground-rgb: 255, 255, 255;
-        --background-start-rgb: 0, 0, 0;
-        --background-end-rgb: 0, 0, 0;
-    }
+	:root {
+		--foreground-rgb: 255, 255, 255;
+		--background-start-rgb: 0, 0, 0;
+		--background-end-rgb: 0, 0, 0;
+	}
 }
 
 body {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(
-            to bottom,
-            transparent,
-            rgb(var(--background-end-rgb))
-    ) rgb(var(--background-start-rgb));
-    font-family: 'Open Sans', sans-serif;
+	color: rgb(var(--foreground-rgb));
+	background: linear-gradient(
+		to bottom,
+		transparent,
+		rgb(var(--background-end-rgb))
+	) rgb(var(--background-start-rgb));
+	font-family: 'Open Sans', sans-serif;
 }
 
 .card-manga {
-    overflow: hidden;
-    border-radius: 5px;
+	overflow: hidden;
+	border-radius: 5px;
 }
 
 .card-manga-title {
-    transition: opacity .2s ease-in-out, transform .2s ease-in-out;
-    opacity: 0;
-    text-align: center;
-    transform: translateY(15px);
-    background-color: rgba(0, 0, 0, .75);
+	transition: opacity .2s ease-in-out, transform .2s ease-in-out;
+	opacity: 0;
+	text-align: center;
+	transform: translateY(15px);
+	background-color: rgba(0, 0, 0, .75);
 }
 
 .card-manga:hover .card-manga-title {
-    opacity: 1;
-    transform: translateY(0);
+	opacity: 1;
+	transform: translateY(0);
 }
 
 .card-image {
-    filter: blur(10px);
-    background-position: 0 25%;
-    background-repeat: no-repeat;
-    background-size: 100%;
-    transform: scale(1.1);
-    opacity: 0.4;
+	filter: blur(10px);
+	background-position: 0 25%;
+	background-repeat: no-repeat;
+	background-size: 100%;
+	transform: scale(1.1);
+	opacity: 0.4;
 }
 
 .radius {
-    border-radius: 5px;
+	border-radius: 5px;
 }
 
 .radius-100 {
-    border-radius: 100%;
+	border-radius: 100%;
 }
 
 .rotate {
-    transition: transform .25s;
+	transition: transform .25s;
 }
 
 .rotate-180 {
-    transform: rotate(180deg);
+	transform: rotate(180deg);
 }

@@ -1,7 +1,7 @@
 interface ImportMetaEnv {
-    readonly API_BASE: string
+	readonly API_BASE: string
 }
 
 interface ImportMeta {
-    readonly env?: ImportMetaEnv
+	readonly env?: ImportMetaEnv
 }

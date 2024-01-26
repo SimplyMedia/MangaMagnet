@@ -1,34 +1,34 @@
 {
-  "name": "manga-magnet-frontend",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "types:openapi": "openapi -i http://localhost:5248/swagger/v1/swagger.json -o src/services/openapi"
-  },
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.5.1",
-    "@fortawesome/free-solid-svg-icons": "^6.5.1",
-    "@fortawesome/react-fontawesome": "^0.2.0",
-    "next": "^14.1.0",
-    "openapi-typescript": "^6.7.4",
-    "openapi-typescript-codegen": "^0.27.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-markdown": "^9.0.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20.11.6",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "autoprefixer": "^10.4.17",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "14.0.4",
-    "postcss": "^8.4.33",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
-  }
+	"name": "manga-magnet-frontend",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint",
+		"types:openapi": "openapi -i http://localhost:5248/swagger/v1/swagger.json -o src/services/openapi"
+	},
+	"dependencies": {
+		"@fortawesome/fontawesome-svg-core": "^6.5.1",
+		"@fortawesome/free-solid-svg-icons": "^6.5.1",
+		"@fortawesome/react-fontawesome": "^0.2.0",
+		"next": "^14.1.0",
+		"openapi-typescript": "^6.7.4",
+		"openapi-typescript-codegen": "^0.27.0",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-markdown": "^9.0.1"
+	},
+	"devDependencies": {
+		"@types/node": "^20.11.6",
+		"@types/react": "^18.2.48",
+		"@types/react-dom": "^18.2.18",
+		"autoprefixer": "^10.4.17",
+		"eslint": "^8.56.0",
+		"eslint-config-next": "14.0.4",
+		"postcss": "^8.4.33",
+		"tailwindcss": "^3.4.1",
+		"typescript": "^5.3.3"
+	}
 }
