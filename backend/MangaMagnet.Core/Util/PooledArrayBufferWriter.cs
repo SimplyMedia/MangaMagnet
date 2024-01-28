@@ -17,8 +17,16 @@ public sealed class PooledArrayBufferWriter<T> : IBufferWriter<T>, IDisposable
 	/// <summary>
 	/// Initializes a new instance of the <see cref="PooledArrayBufferWriter{T}"/> class.
 	/// </summary>
-	/// <param name="pool">The pool to use. Defaults to <see cref="ArrayPool{T}.Shared"/>.</param>
-	public PooledArrayBufferWriter(ArrayPool<T>? pool = null)
+	public PooledArrayBufferWriter()
+		: this(ArrayPool<T>.Shared)
+	{
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="PooledArrayBufferWriter{T}"/> class.
+	/// </summary>
+	/// <param name="pool">The pool to use.</param>
+	public PooledArrayBufferWriter(ArrayPool<T> pool)
 	{
 		_pool = pool ?? ArrayPool<T>.Shared;
 		_buffer = _pool.Rent(InitialBufferSize);
@@ -50,7 +58,7 @@ public sealed class PooledArrayBufferWriter<T> : IBufferWriter<T>, IDisposable
 	}
 
 	/// <inheritdoc />
-	public Memory<T> GetMemory(int sizeHint = 0)
+	public Memory<T> GetMemory(int sizeHint)
 	{
 		if (_buffer.Length - _index < sizeHint)
 		{
@@ -61,7 +69,7 @@ public sealed class PooledArrayBufferWriter<T> : IBufferWriter<T>, IDisposable
 	}
 
 	/// <inheritdoc />
-	public Span<T> GetSpan(int sizeHint = 0)
+	public Span<T> GetSpan(int sizeHint)
 	{
 		return GetMemory(sizeHint).Span;
 	}

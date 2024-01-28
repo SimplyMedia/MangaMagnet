@@ -61,7 +61,12 @@ public sealed class ProgressTask : INotifyPropertyChanged, IDisposable, IProgres
 	{
 		if (EqualityComparer<T>.Default.Equals(field, value)) return false;
 		field = value;
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+		if (PropertyChanged is not null)
+		{
+			PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+
 		return true;
 	}
 

@@ -31,7 +31,7 @@ public class WebSocketService
 	/// </summary>
 	/// <param name="memory">Message to send.</param>
 	/// <param name="stoppingToken">Cancellation token.</param>
-	public async Task SendToAllAsync(ReadOnlyMemory<byte> memory, CancellationToken stoppingToken = default)
+	public async Task SendToAllAsync(ReadOnlyMemory<byte> memory, CancellationToken stoppingToken)
 	{
 		foreach (var socket in _sockets.Values)
 		{

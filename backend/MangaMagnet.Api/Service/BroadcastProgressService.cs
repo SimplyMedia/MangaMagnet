@@ -9,6 +9,7 @@ namespace MangaMagnet.Api.Service;
 
 public class BroadcastProgressService(ProgressService progressService, WebSocketService webSocketService, IOptions<JsonOptions> jsonOptions) : BackgroundService
 {
+	/// <inheritdoc />
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		try
