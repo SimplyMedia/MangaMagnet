@@ -2,7 +2,7 @@ import { Inter } from 'next/font/google'
 import { ChangeEvent, useEffect, useState } from "react";
 import { MangaCard } from "@/components/manga/MangaCard";
 import { Layout } from "@/components/layout/Layout";
-import { MangaResponse, MangaService, MangaStatus } from "@/services/openapi";
+import { MangaResponse, MangaService, MangaStatus, TestService } from "@/services/openapi";
 
 const inter = Inter({subsets: ['latin']})
 
@@ -31,6 +31,8 @@ export default function Home() {
 
 	return (
 		<Layout>
+			<button className={"m-4 p-2 bg-black"} onClick={() => TestService.testProgressTask()}>Test Task</button>
+
 			<select className={"m-4 bg-black"} value={statusFilter} onChange={onStatusFilterChange}>
 				<option value={''}>No filter</option>
 				{Object.values(MangaStatus).filter(i => isNaN(parseInt(i))).map(i => (

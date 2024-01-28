@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { MangaStatus } from './MangaStatus';
-
 export type MangaMetadataResponse = {
     id: string;
     displayTitle: string;
@@ -16,7 +15,7 @@ export type MangaMetadataResponse = {
     genres: Array<string>;
     tags: Array<string>;
     userScore: number;
-    coverImageUrl: string;
+    coverImageUrl?: string | null;
     anilistId?: number | null;
     mangaDexId: string;
     mangaUpdatesId?: string | null;
