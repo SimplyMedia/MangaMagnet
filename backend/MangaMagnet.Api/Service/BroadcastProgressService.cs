@@ -19,25 +19,30 @@ public class BroadcastProgressService(ProgressService progressService, WebSocket
 
 			while (await timer.WaitForNextTickAsync(stoppingToken))
 			{
-				var changedTasks = progressService.GetUpdatedTasksAndReset();
-
-				if (changedTasks.Count == 0)
-				{
-					continue;
-				}
-
-				var writer = new Utf8JsonWriter(buffer);
-				JsonSerializer.Serialize(writer, changedTasks, jsonOptions.Value.SerializerOptions);
-				await writer.FlushAsync(stoppingToken);
-
-				await webSocketService.SendToAllAsync(buffer.WrittenMemory, stoppingToken);
-
-				buffer.Reset();
+				await TickAsync(buffer, stoppingToken);
 			}
 		}
 		catch (TaskCanceledException)
 		{
 			// Ignore
 		}
+	}
+
+	private async Task TickAsync(PooledArrayBufferWriter<byte> buffer, CancellationToken stoppingToken)
+	{
+		var changedTasks = progressService.GetUpdatedTasksAndReset();
+
+		if (changedTasks.Count == 0)
+		{
+			return;
+		}
+
+		var writer = new Utf8JsonWriter(buffer);
+		JsonSerializer.Serialize(writer, changedTasks, jsonOptions.Value.SerializerOptions);
+		await writer.FlushAsync(stoppingToken);
+
+		await webSocketService.SendToAllAsync(buffer.WrittenMemory, stoppingToken);
+
+		buffer.Reset();
 	}
 }

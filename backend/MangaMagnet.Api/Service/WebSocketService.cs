@@ -31,11 +31,20 @@ public class WebSocketService
 	/// </summary>
 	/// <param name="memory">Message to send.</param>
 	/// <param name="stoppingToken">Cancellation token.</param>
-	public async Task SendToAllAsync(ReadOnlyMemory<byte> memory, CancellationToken stoppingToken)
+	public Task SendToAllAsync(ReadOnlyMemory<byte> memory, CancellationToken stoppingToken)
 	{
-		foreach (var socket in _sockets.Values)
+		return Task.WhenAll(_sockets.Values.Select(socket => SendToSocketAsync(socket, memory, stoppingToken)));
+	}
+
+	private static async Task SendToSocketAsync(WebSocket socket, ReadOnlyMemory<byte> memory, CancellationToken stoppingToken)
+	{
+		try
 		{
 			await socket.SendAsync(memory, WebSocketMessageType.Text, true, stoppingToken);
+		}
+		catch
+		{
+			// ignore
 		}
 	}
 }
