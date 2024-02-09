@@ -11,9 +11,7 @@ if (process.env.NEXT_PUBLIC_API_BASE) {
 export default function App({Component, pageProps}: AppProps) {
 	return (
 		<WebSocketProvider>
-			<React.StrictMode>
-				<Component {...pageProps} />
-			</React.StrictMode>
+			<Component {...pageProps} />
 		</WebSocketProvider>
 	)
 }

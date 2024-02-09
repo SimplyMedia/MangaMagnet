@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	output: 'standalone',
-	reactStrictMode: false, // Moved to _app.tsx, otherwise providers are called twice
+	reactStrictMode: true,
 	images: {
 		remotePatterns: [{
 			protocol: 'https',

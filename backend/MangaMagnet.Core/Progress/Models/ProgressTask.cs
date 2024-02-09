@@ -5,7 +5,7 @@ namespace MangaMagnet.Core.Progress.Models;
 
 public sealed class ProgressTask : INotifyPropertyChanged, IDisposable, IProgress<int>
 {
-	private string? _name = "New task";
+	private string _name = "New task";
 	private int _progress;
 	private bool _isCompleted;
 
