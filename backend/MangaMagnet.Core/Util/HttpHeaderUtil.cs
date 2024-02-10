@@ -23,4 +23,15 @@ public static class HttpHeaderUtil
         };
         return headers;
     }
+
+    public static Dictionary<string, string> GetRealHeaders()
+    {
+	    var headers = new Dictionary<string, string>()
+	    {
+		    {"User-Agent", "MangaMagnet v0.0.1 (https://github.com/SimplyMedia/MangaMagnet)"},
+		    {"Accept-Encoding", "gzip, deflate, br"},
+	    };
+
+	    return headers;
+    }
 }

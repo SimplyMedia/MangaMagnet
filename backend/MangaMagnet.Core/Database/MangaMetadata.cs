@@ -12,7 +12,7 @@ public class MangaMetadata : ICreatable, IUpdatable
 
     public MangaStatus Status { get; set; } = MangaStatus.OnGoing;
 
-    public int? Year { get; set; } = default!;
+    public int? Year { get; set; }
 
     public string Author { get; set; } = default!;
 

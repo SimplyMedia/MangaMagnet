@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Text.Json;
+﻿using System.Text.Json;
 using MangaMagnet.Core.Progress;
 using MangaMagnet.Core.Util;
 using Microsoft.AspNetCore.Http.Json;

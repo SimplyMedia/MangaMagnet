@@ -8,13 +8,13 @@ public class PageInfo
 
 	public bool DoublePage = false;
 
-	public long ImageSize { get; set; } = 0;
+	public long ImageSize { get; set; }
 
-	public string Key { get; set; } = "";
+	public string Key { get; set; }
 
-	public string Bookmark { get; set; } = "";
+	public string Bookmark { get; set; }
 
-	public int ImageWidth { get; set; } = -1;
+	public int ImageWidth { get; set; }
 
-	public int ImageHeight { get; set; } = -1;
+	public int ImageHeight { get; set; }
 }

@@ -10,7 +10,10 @@ using MangaMagnet.Api.Middlewares;
 using MangaMagnet.Api.Models.Database;
 using MangaMagnet.Api.Service;
 using MangaMagnet.Api.Swagger;
+using MangaMagnet.Core.CBZ;
+using MangaMagnet.Core.CBZ.ComicInfo;
 using MangaMagnet.Core.Database;
+using MangaMagnet.Core.Download;
 using MangaMagnet.Core.Metadata;
 using MangaMagnet.Core.Metadata.MangaDex;
 using MangaMagnet.Core.Progress;
@@ -67,9 +70,13 @@ builder.Services.AddSingleton<MangaDexApiService>();
 builder.Services.AddSingleton<MangaDexConverterService>();
 builder.Services.AddSingleton<IMetadataFetcher, MangaDexMetadataFetcher>();
 builder.Services.AddSingleton<EntityConverterService>();
+builder.Services.AddSingleton<CbzService>();
+builder.Services.AddSingleton<ComicInfoService>();
 builder.Services.AddHostedService<BroadcastProgressService>();
 builder.Services.AddScoped<MangaService>();
 builder.Services.AddScoped<MetadataService>();
+builder.Services.AddScoped<DownloadService>();
+
 
 // Progress services
 builder.Services.AddSingleton<ProgressService>();

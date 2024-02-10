@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace MangaMagnet.Api.Models.Response;
+﻿namespace MangaMagnet.Api.Models.Response;
 
 public record MangaResponse(
     Guid Id,
