@@ -76,7 +76,7 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 
         var mangaMetadataResult = await metadataFetcher.FetchMangaMetadataAsync(mangaDexId, cancellationToken);
 
-        logger.LogDebug("Manga metadata: {@MangaMetadataResult}", mangaMetadataResult);
+        logger.LogTrace("Manga metadata: {@MangaMetadataResult}", mangaMetadataResult);
 
         var mangaMetadata = entityConverterService.ConvertMangaMetadataResultToDbEntity(mangaMetadataResult);
 
@@ -93,7 +93,7 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 	{
 		var chaptersMetadata = await metadataFetcher.FetchAllChapterMetadataAsync(mangaDexId, cancellationToken);
 
-		logger.LogDebug("Chapters metadata: {@ChaptersMetadata}", chaptersMetadata);
+		logger.LogTrace("Chapters metadata: {@ChaptersMetadata}", chaptersMetadata);
 
 		var chapters = chaptersMetadata.Select(chapterMetadata => entityConverterService.ConvertChapterMetadataResultToDbEntity(chapterMetadata, mangaMetadata.Id)).ToList();
 
@@ -107,13 +107,13 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 	{
 		var chaptersMetadata = await metadataFetcher.FetchAllChapterMetadataAsync(metadata.MangaDexId, cancellationToken);
 
-		logger.LogDebug("Chapters metadata: {@ChaptersMetadata}", chaptersMetadata);
+		logger.LogTrace("Chapters metadata: {@ChaptersMetadata}", chaptersMetadata);
 
 		var dbMangaChapterMetadata = await dbContext.ChapterMetadata
 			.Where(c => c.MangaId == metadata.Id)
 			.ToListAsync(cancellationToken);
 
-		logger.LogDebug("DB Chapters metadata: {@DbChaptersMetadata}", dbMangaChapterMetadata);
+		logger.LogTrace("DB Chapters metadata: {@DbChaptersMetadata}", dbMangaChapterMetadata);
 
 		var newOrUpdatedChapters = new List<ChapterMetadata>();
 
@@ -144,7 +144,7 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
     {
         var mangaMetadataResult = await metadataFetcher.FetchMangaMetadataAsync(mangaDexId, cancellationToken);
 
-        logger.LogDebug("Manga metadata: {@MangaMetadataResult}", mangaMetadataResult);
+        logger.LogTrace("Manga metadata: {@MangaMetadataResult}", mangaMetadataResult);
 
         metadata.DisplayTitle = mangaMetadataResult.DisplayTitle;
         metadata.Aliases = mangaMetadataResult.Aliases;
