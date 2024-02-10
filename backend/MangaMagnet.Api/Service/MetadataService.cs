@@ -2,11 +2,12 @@
 using MangaMagnet.Api.Models.Response;
 using MangaMagnet.Core.Database;
 using MangaMagnet.Core.Metadata;
+using MangaMagnet.Core.Progress;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaMagnet.Api.Service;
 
-public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher metadataFetcher, BaseDatabaseContext dbContext, EntityConverterService entityConverterService)
+public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher metadataFetcher, BaseDatabaseContext dbContext, EntityConverterService entityConverterService, ProgressService progressService)
 {
 	public Task<List<MangaSearchMetadataResult>> SearchMangaMetadataByNameAsync(string mangaName, CancellationToken cancellationToken = default)
 		=> metadataFetcher.SearchMangaMetadataAsync(mangaName, cancellationToken);
@@ -50,12 +51,20 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 
 	public async Task<IEnumerable<MangaMetadataResponse>> UpdateAllMetadataAsync(CancellationToken cancellationToken = default)
 	{
+		using var progressTask = progressService.CreateTask("Refreshing Manga Metadata");
+
 		var metadata = await dbContext.MangaMetadata.ToListAsync(cancellationToken);
+
+		progressTask.Total = metadata.Count;
 
 		var updated = new List<MangaMetadataResponse>();
 
 		foreach (var mangaMetadata in metadata)
+		{
+			progressTask.Name = $"Refresh {mangaMetadata.DisplayTitle}";
 			updated.Add(await RefreshMetadataAsync(mangaMetadata.MangaDexId, cancellationToken));
+			progressTask.Increment();
+		}
 
 		return updated;
 	}
