@@ -4,8 +4,8 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalculator, faFolder } from "@fortawesome/free-solid-svg-icons";
 import Markdown from "react-markdown";
-import { ExternalLink } from "@/components/ExternalLink";
 import React from "react";
+import MangaExternalLink, { MangaExternalLinkType } from "@/components/manga/MangaExternalLink";
 
 function formatSizeUnits(bytes: number) {
 	if (bytes >= 1073741824) {
@@ -87,35 +87,17 @@ export default function MangaHeader({manga}: { manga: MangaResponse }) {
 							<Markdown>{description}</Markdown>
 						</div>
 						<div className={"mt-4 flex xl:justify-end"}>
-							<ExternalLink href={`https://mangadex.org/title/${manga.metadata.mangaDexId}`}>
-								MangaDex
-							</ExternalLink>
+							<MangaExternalLink id={manga.metadata.mangaDexId}
+											   type={MangaExternalLinkType.MangaDex}></MangaExternalLink>
 
-							{manga.metadata.anilistId && (
-								<ExternalLink
-									className={"ml-2"}
-									href={`https://anilist.co/manga/${manga.metadata.anilistId}`}>
-									Anlist
-								</ExternalLink>
-							)}
+							<MangaExternalLink id={manga.metadata.anilistId}
+											   type={MangaExternalLinkType.AniList}></MangaExternalLink>
 
-							{manga.metadata.mangaUpdatesId && (
-								<ExternalLink
-									className={"ml-2"}
-									href={isNaN(parseInt(manga.metadata.mangaUpdatesId))
-										? `https://www.mangaupdates.com/series/${manga.metadata.mangaUpdatesId}`
-										: `https://www.mangaupdates.com/series.html?id=${manga.metadata.mangaUpdatesId}`}>
-									MangaUpdates
-								</ExternalLink>
-							)}
+							<MangaExternalLink id={manga.metadata.mangaUpdatesId}
+											   type={MangaExternalLinkType.MangaUpdates}></MangaExternalLink>
 
-							{manga.metadata.myAnimeListId && (
-								<ExternalLink
-									className={"ml-2"}
-									href={`https://myanimelist.net/manga/${manga.metadata.myAnimeListId}`}>
-									MyAnimeList
-								</ExternalLink>
-							)}
+							<MangaExternalLink id={manga.metadata.myAnimeListId}
+											   type={MangaExternalLinkType.MyAnimeList}></MangaExternalLink>
 						</div>
 					</div>
 				</div>
