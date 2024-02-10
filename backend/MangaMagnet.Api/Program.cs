@@ -5,6 +5,7 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using AspNetCore.ExceptionHandler;
 using MangaMagnet.Api.Configurations;
+using MangaMagnet.Api.Job;
 using MangaMagnet.Api.Middlewares;
 using MangaMagnet.Api.Models.Database;
 using MangaMagnet.Api.Service;
@@ -140,6 +141,14 @@ builder.Services.AddQuartz(q =>
 
         o.UseNewtonsoftJsonSerializer();
     });
+
+    var updateMetadataKey = new JobKey("UpdateMetadataJob", "MangaMagnet");
+    q.AddJob<UpdateMetadataJob>(updateMetadataKey);
+
+    q.AddTrigger(t => t
+		.WithIdentity("UpdateMetadataTrigger", "MangaMagnet")
+		.ForJob(updateMetadataKey)
+		.WithCronSchedule("0 0 * * * ?"));
 });
 builder.Services.AddQuartzHostedService(q =>
 {
