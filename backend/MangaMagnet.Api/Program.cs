@@ -4,14 +4,16 @@ using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using AspNetCore.ExceptionHandler;
-using MangaMagnet.Api;
 using MangaMagnet.Api.Configurations;
+using MangaMagnet.Api.Middlewares;
 using MangaMagnet.Api.Models.Database;
 using MangaMagnet.Api.Service;
 using MangaMagnet.Api.Swagger;
 using MangaMagnet.Core.Database;
 using MangaMagnet.Core.Metadata;
 using MangaMagnet.Core.Metadata.Providers.MangaDex;
+using MangaMagnet.Core.Progress;
+using MangaMagnet.Core.Progress.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Quartz;
@@ -59,8 +61,14 @@ builder.Services.AddSingleton<MangaDexApiService>();
 builder.Services.AddSingleton<MangaDexConverterService>();
 builder.Services.AddSingleton<IMetadataFetcher, MetadataFetcherService>();
 builder.Services.AddSingleton<EntityConverterService>();
+builder.Services.AddHostedService<BroadcastProgressService>();
 builder.Services.AddScoped<MangaService>();
 builder.Services.AddScoped<MetadataService>();
+
+// Progress services
+builder.Services.AddSingleton<ProgressService>();
+builder.Services.AddSingleton<WebSocketService>();
+builder.Services.AddSingleton<WebSocketMiddleware>();
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -94,6 +102,7 @@ builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 builder.Services.AddSwaggerGen(c =>
 {
 	c.SchemaFilter<NullabilitySchemaFilter>();
+	c.DocumentFilter<CustomModelDocumentFilter<ProgressTask>>();
 });
 
 builder.Services.AddCors(options =>
@@ -176,8 +185,6 @@ using (var scope = app.Services.GetService<IServiceScopeFactory>()?.CreateScope(
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseHttpsRedirection();
-
     app.UseDeveloperExceptionPage();
 
     var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
@@ -199,6 +206,8 @@ app.UseSerilogRequestLogging(opt => opt.GetLevel = (_, _, _) => LogEventLevel.De
 
 app.UseCors();
 
+app.UseWebSockets();
+app.UseMiddleware<WebSocketMiddleware>();
 app.UseRouting();
 
 app.UseAuthorization();

@@ -26,7 +26,7 @@ export const MangaCard = ({manga}: { manga: MangaResponse }) => {
 					 }}></div>
 
 				<Image
-					src={manga.metadata.coverImageUrl}
+					src={manga.metadata.coverImageUrl ?? '/placeholder-cover.webp'}
 					alt={manga.metadata.displayTitle}
 					className=""
 					height="300"

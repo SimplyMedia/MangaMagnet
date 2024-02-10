@@ -8,6 +8,9 @@ const nextConfig = {
 			hostname: 'uploads.mangadex.org',
 			pathname: '**',
 		}],
+	},
+	env: {
+		NEXT_PUBLIC_API_BASE: 'http://localhost:5248'
 	}
 }
 

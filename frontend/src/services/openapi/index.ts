@@ -15,7 +15,9 @@ export type { MangaMetadataResponse } from './models/MangaMetadataResponse';
 export type { MangaResponse } from './models/MangaResponse';
 export type { MangaSearchMetadataResult } from './models/MangaSearchMetadataResult';
 export { MangaStatus } from './models/MangaStatus';
+export type { ProgressTask } from './models/ProgressTask';
 export type { VolumeResponse } from './models/VolumeResponse';
 
 export { MangaService } from './services/MangaService';
 export { MetadataService } from './services/MetadataService';
+export { TestService } from './services/TestService';

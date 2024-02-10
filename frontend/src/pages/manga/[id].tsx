@@ -80,7 +80,7 @@ const MangaHeader = ({manga}: { manga: MangaResponse }) => {
 			<div className={"relative p-5 z-10 flex flex-1"}>
 				<div className={"flex flex-1 space-x-4"}>
 					<Image
-						src={manga.metadata.coverImageUrl}
+						src={manga.metadata.coverImageUrl ?? '/placeholder-cover.webp'}
 						alt={manga.metadata.displayTitle}
 						height="300"
 						style={{

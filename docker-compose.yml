@@ -20,8 +20,6 @@ services:
     build:
       context: ./backend
       dockerfile: MangaMagnet.Api/Dockerfile
-    ports:
-      - 43524:8080
     depends_on:
       postgres:
         condition: service_healthy
@@ -34,12 +32,16 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+
+  nginx:
+    image: nginx:1.25-alpine
     ports:
-      - 43525:3000
+      - 43524:80
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
+      - frontend
       - backend
-    environment:
-      API_BASE: http://backend:8080
 
 volumes:
   data:
