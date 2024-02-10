@@ -70,7 +70,7 @@ public class MangaDexConverterService
 		    attributes.Description.En,
 		    genres,
 		    tags,
-		    mangaDexStatistics.Rating.Average,
+		    mangaDexStatistics.Rating.Average ?? mangaDexStatistics.Rating.Bayesian ?? 0.0,
 		    GetCoverUrl(mangaDexData),
 		    GetAnilistId(mangaDexData),
 		    mangaDexData.Id,
