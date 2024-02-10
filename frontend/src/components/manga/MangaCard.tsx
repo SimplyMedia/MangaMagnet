@@ -16,7 +16,7 @@ export const statusColors: {
 
 export const MangaCard = ({manga}: { manga: MangaResponse }) => {
 	return (
-		<Link href={`/manga/${manga.id}`}>
+		<Link className={"m-2"} href={`/manga/${manga.id}`}>
 			<div className={"w-[200px] h-[300px] flex relative card-manga"}>
 				<div className={"absolute w-[30px] h-[30px] right-0"}
 					 style={{

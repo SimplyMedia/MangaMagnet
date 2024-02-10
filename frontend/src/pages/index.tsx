@@ -46,7 +46,7 @@ export default function Home() {
 				</div>
 			)}
 
-			<div className={"flex flex-wrap overflow-y-auto m-4 space-x-5"}>
+			<div className={"flex flex-wrap overflow-y-auto m-4"}>
 				{filteredMangaList.map(manga => (
 					<MangaCard key={manga.id} manga={manga}/>
 				))}
