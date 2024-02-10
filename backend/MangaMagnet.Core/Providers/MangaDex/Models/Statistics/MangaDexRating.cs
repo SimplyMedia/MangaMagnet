@@ -3,7 +3,7 @@
 namespace MangaMagnet.Core.Providers.MangaDex.Models.Statistics;
 
 public record MangaDexRating(
-    [property: JsonPropertyName("average")] double Average,
-    [property: JsonPropertyName("bayesian")] double Bayesian,
+    [property: JsonPropertyName("average")] double? Average,
+    [property: JsonPropertyName("bayesian")] double? Bayesian,
     [property: JsonPropertyName("distribution")] MangaDexRatingDistribution Distribution
 );
