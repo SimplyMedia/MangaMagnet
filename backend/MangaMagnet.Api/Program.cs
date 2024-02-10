@@ -50,15 +50,19 @@ builder.Host.UseSerilog((_, _, loggerConfiguration) =>
             theme: SystemConsoleTheme.Colored);
 });
 
-var handler = new HttpClientHandler();
-if (handler.SupportsAutomaticDecompression)
-{
-    handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-}
+builder.Services.AddHttpClient("MangaDex")
+	.ConfigurePrimaryHttpMessageHandler(() =>
+	{
+		var handler = new HttpClientHandler();
 
-var httpClient = new HttpClient(handler);
+		if (handler.SupportsAutomaticDecompression)
+		{
+			handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
+		}
 
-builder.Services.AddSingleton(httpClient);
+        return handler;
+	});
+
 builder.Services.AddSingleton<MangaDexApiService>();
 builder.Services.AddSingleton<MangaDexConverterService>();
 builder.Services.AddSingleton<IMetadataFetcher, MangaDexMetadataFetcher>();
