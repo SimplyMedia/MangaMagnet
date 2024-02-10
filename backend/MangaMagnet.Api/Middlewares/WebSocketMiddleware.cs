@@ -11,7 +11,7 @@ namespace MangaMagnet.Api.Middlewares;
 /// <summary>
 /// Handles WebSocket requests.
 /// </summary>
-public class WebSocketMiddleware(WebSocketService webSocketService, ProgressService progressService, IOptions<JsonOptions> jsonOptions) : IMiddleware
+public class WebSocketMiddleware(WebSocketService webSocketService, ProgressService progressService, IOptions<JsonOptions> jsonOptions, IHostApplicationLifetime lifetime) : IMiddleware
 {
 	/// <inheritdoc />
 	public Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -47,13 +47,14 @@ public class WebSocketMiddleware(WebSocketService webSocketService, ProgressServ
 
 		try
 		{
-			var cancellationToken = context.RequestAborted;
+			using var cts = CancellationTokenSource.CreateLinkedTokenSource(lifetime.ApplicationStopping, context.RequestAborted);
+			var cancellationToken = cts.Token;
 
 			await SendCurrentTasksAsync(webSocket);
 			webSocketService.AddSocket(id, webSocket);
 
 			var buffer = new byte[1024];
-			var result = await webSocket.ReceiveAsync(buffer, default);
+			var result = await webSocket.ReceiveAsync(buffer, cancellationToken);
 
 			while (!result.CloseStatus.HasValue)
 			{
@@ -62,9 +63,13 @@ public class WebSocketMiddleware(WebSocketService webSocketService, ProgressServ
 				// This websocket is only for sending progress updates, so we don't need to handle any incoming messages.
 			}
 
-			await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, cancellationToken);
+			await webSocket.CloseAsync(result.CloseStatus ?? WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, cancellationToken);
 		}
-		catch (WebSocketException e)
+		catch (TaskCanceledException)
+		{
+			await TryCloseAsync(webSocket, WebSocketCloseStatus.NormalClosure);
+		}
+		catch (WebSocketException)
 		{
 			await TryCloseAsync(webSocket, WebSocketCloseStatus.ProtocolError);
 		}
