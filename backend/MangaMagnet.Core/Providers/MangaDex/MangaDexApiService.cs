@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MangaMagnet.Core.Providers.MangaDex;
 
-public class MangaDexApiService(HttpClient httpClient, ILogger<MangaDexApiService> logger) : SimpleRatelimitedProvider
+public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<MangaDexApiService> logger) : SimpleRatelimitedProvider
 {
     public async Task<List<MangaDexMangaData>> SearchMangaByNameAsync(string input, CancellationToken cancellationToken = default)
     {
@@ -89,15 +89,19 @@ public class MangaDexApiService(HttpClient httpClient, ILogger<MangaDexApiServic
 	    return chapters;
     }
 
-    private Task<T> SendAndParseGetRequestAsync<T>(string requestUri, CancellationToken cancellationToken = default)
-	    => SendAndParseRequestAsync<T>(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
+    private async Task<T> SendAndParseGetRequestAsync<T>(string requestUri, CancellationToken cancellationToken = default)
+    {
+	    using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+
+	    return await SendAndParseRequestAsync<T>(request, cancellationToken);
+    }
 
     private async Task<T> SendAndParseRequestAsync<T>(HttpRequestMessage request,
 	    CancellationToken cancellationToken = default)
     {
 	    logger.LogDebug("Request Uri: {Request}", request.RequestUri);
 
-	    var responseMessage = await SendRequestAsync(request, cancellationToken);
+	    using var responseMessage = await SendRequestAsync(request, cancellationToken);
 
 	    return await responseMessage.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken) ??
 	                   throw new Exception("Failed to deserialize response");
@@ -110,6 +114,7 @@ public class MangaDexApiService(HttpClient httpClient, ILogger<MangaDexApiServic
 
         await RateLimiter.AcquireAsync(cancellationToken: cancellationToken);
 
+        using var httpClient = httpClientFactory.CreateClient("MangaDex");
         var response = await httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
