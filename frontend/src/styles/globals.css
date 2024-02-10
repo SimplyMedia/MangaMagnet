@@ -70,3 +70,16 @@ body {
 .rotate-180 {
 	transform: rotate(180deg);
 }
+
+.animate-indeterminate {
+	animation: indeterminate 3s infinite cubic-bezier(0.39, 0.575, 0.565, 1)
+}
+
+@keyframes indeterminate {
+	0% {
+		left: -100%;
+	}
+	100% {
+		left: 100%;
+	}
+}

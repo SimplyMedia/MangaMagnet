@@ -51,7 +51,7 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 
 	public async Task<IEnumerable<MangaMetadataResponse>> UpdateAllMetadataAsync(CancellationToken cancellationToken = default)
 	{
-		using var progressTask = progressService.CreateTask("Refreshing Manga Metadata");
+		using var progressTask = progressService.CreateTask("Refreshing Metadata");
 
 		var metadata = await dbContext.MangaMetadata.ToListAsync(cancellationToken);
 
@@ -61,7 +61,7 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 
 		foreach (var mangaMetadata in metadata)
 		{
-			progressTask.Name = $"Refresh {mangaMetadata.DisplayTitle}";
+			progressTask.Description = mangaMetadata.DisplayTitle;
 			updated.Add(await RefreshMetadataAsync(mangaMetadata.MangaDexId, cancellationToken));
 			progressTask.Increment();
 		}

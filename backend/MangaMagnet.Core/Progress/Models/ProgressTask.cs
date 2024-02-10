@@ -6,6 +6,7 @@ namespace MangaMagnet.Core.Progress.Models;
 public sealed class ProgressTask : INotifyPropertyChanged, IDisposable, IProgress<int>
 {
     private string _name = "New task";
+    private string? _description;
     private int _progress;
     private bool _isCompleted;
     private int? _total;
@@ -33,6 +34,15 @@ public sealed class ProgressTask : INotifyPropertyChanged, IDisposable, IProgres
         get => _name;
         set => SetField(ref _name, value);
     }
+
+	/// <summary>
+	/// Gets or sets the description of the task.
+	/// </summary>
+	public string? Description
+	{
+		get => _description;
+		set => SetField(ref _description, value);
+	}
 
     /// <summary>
     /// Gets or sets the progress of the task.

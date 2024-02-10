@@ -12,6 +12,10 @@ export type ProgressTask = {
      */
     name: string;
     /**
+     * Gets or sets the description of the task.
+     */
+    description?: string | null;
+    /**
      * Gets or sets the progress of the task.
      */
     progress: number;
@@ -19,5 +23,11 @@ export type ProgressTask = {
      * `true` if the task is completed, `false` otherwise.
      */
     isCompleted: boolean;
+    /**
+     * `true` if the task is indeterminate, `false` otherwise.
+     */
+    indeterminate: boolean;
+    total?: number | null;
+    current: number;
 };
 
