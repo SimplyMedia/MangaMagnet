@@ -17,44 +17,63 @@ public class MangaFileNameParser(ILogger<MangaFileNameParser> logger) : IFileNam
 
 		foreach (var regex in volumeRegexes)
 		{
-			var match = regex.Match(fileName);
-			if (!match.Success) continue;
-			logger.LogDebug("Matched {FileName} as a volume release with Regex {Regex}", fileName, regex);
-
-			var volume = match.Groups["Volume"].Value;
-
-			var title = match.Groups["Title"].Value;
-			var year = match.Groups["Year"].ValueSpan;
-			var releaseGroup = match.Groups["ReleaseGroup"].Value;
-			var digital = match.Groups["Digital"].ValueSpan;
-
-			int? yearNumber = year.IsEmpty ? null : int.Parse(year);
-
-			var volumeNumber = int.Parse(volume);
-
-			return new FileParserResult(title, ParsedReleaseType.VOLUME, yearNumber, volumeNumber, null, releaseGroup, !digital.IsEmpty);
+			var match = TryMatch(fileName, ParsedReleaseType.VOLUME, regex);
+			if (match is not null) return match;
 		}
 
 		foreach (var regex in chapterRegexes)
 		{
-			var match = regex.Match(fileName);
-			if (!match.Success) continue;
-			logger.LogDebug("Matched {FileName} as a chapter release with Regex {Regex}", fileName, regex);
-
-			var chapter = match.Groups["Chapter"].ValueSpan;
-
-			var title = match.Groups["Title"].Value;
-			var year = match.Groups["Year"].ValueSpan;
-			var releaseGroup = match.Groups["ReleaseGroup"].Value;
-			var digital = match.Groups["Digital"].ValueSpan;
-
-			int? yearNumber = year.IsEmpty ? null : int.Parse(year);
-
-			var chapterNumber = double.Parse(chapter);
-
-			return new FileParserResult(title, ParsedReleaseType.CHAPTER, yearNumber, null, chapterNumber, releaseGroup, !digital.IsEmpty);
+			var match = TryMatch(fileName, ParsedReleaseType.CHAPTER, regex);
+			if (match is not null) return match;
 		}
 
 		throw new FileNameNotParsableException("File Name could not be parsed.");
+	}
+
+	private FileParserResult? TryMatch(string fileName, ParsedReleaseType type, Regex regex)
+	{
+		var match = regex.Match(fileName);
+		if (!match.Success) return null;
+
+		logger.LogDebug("Matched {FileName} as a {Type} release with Regex {Regex}", fileName, type.ToString().ToLower(), regex);
+
+		var title = match.Groups["Title"].Value;
+		var year = match.Groups["Year"].ValueSpan;
+		var releaseGroup = match.Groups["ReleaseGroup"].Value;
+		var digital = match.Groups["Digital"].ValueSpan;
+
+		int? yearNumber = year.IsEmpty ? null : int.Parse(year);
+
+		var fixedMatch = RegexConstants.FixedRegex().Match(fileName);
+		if (fixedMatch.Success && fixedMatch.Groups["Number"].Value.Length > 0)
+			logger.LogDebug("Matched {FileName} as a fixed release with Regex {Regex}", fileName, RegexConstants.FixedRegex());
+
+		var containsFixedNumber = fixedMatch.Success && fixedMatch.Groups["Number"].ValueSpan.Length > 0;
+		int? fixedNumber = containsFixedNumber  ? int.Parse(fixedMatch.Groups["Number"].ValueSpan) : null;
+
+		int? volumeNumber = null;
+		double? chapterNumber = null;
+
+		switch (type)
+		{
+			case ParsedReleaseType.CHAPTER:
+			{
+				var chapter = match.Groups["Chapter"].ValueSpan;
+				chapterNumber = double.Parse(chapter);
+				break;
+			}
+			case ParsedReleaseType.VOLUME:
+			{
+				var volume = match.Groups["Volume"].Value;
+				volumeNumber = int.Parse(volume);
+				break;
+			}
+			case ParsedReleaseType.NONE:
+				break;
+			default:
+				throw new ArgumentOutOfRangeException(nameof(type), type, null);
+		}
+
+		return new FileParserResult(title, type, yearNumber, volumeNumber, chapterNumber, releaseGroup, !digital.IsEmpty, fixedMatch.Success, fixedNumber);
 	}
 }

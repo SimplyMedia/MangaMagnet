@@ -15,4 +15,7 @@ public static partial class RegexConstants
 
 	[GeneratedRegex(@".*[ _.-]c?(?<Chapter>[0-9]+)",  RegexOptions.IgnoreCase)]
 	public static partial Regex ChapterReleaseRegex2();
+
+	[GeneratedRegex(@"[\[(](f(?<Number>\d+)?)[\])] ?", RegexOptions.IgnoreCase)]
+	public static partial Regex FixedRegex();
 }

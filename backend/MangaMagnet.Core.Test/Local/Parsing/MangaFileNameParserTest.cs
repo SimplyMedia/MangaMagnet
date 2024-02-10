@@ -46,6 +46,23 @@ public class MangaFileNameParserTest(ITestOutputHelper output)
 	public void Parse_ShouldReturnDigital_WhenReleaseIsDigital(string input)
 		=> AssertDigital(input, true);
 
+	[Theory]
+	[InlineData("Title v08 (f) (CM)", null)]
+	[InlineData("Title - More Title v17 (2023) (Digital) (Ushi) (F)", null)]
+	[InlineData("[0v3r] Image-A-Title v22 (2023) (Digital) (Upscaled) (0v3r) (f)", null)]
+	[InlineData("Title v01 (2019) (Digital) (F2) (XRA-Empire)", 2)]
+	[InlineData("[0v3r] Title v05 (F2) (2020) (Digital) (0v3r)", 2)]
+	public void Parse_ShouldReturnIsFixed_WhenReleaseIsFixed(string input, int? expectedFixedNumber)
+		=> AssertFixed(input, true, expectedFixedNumber);
+
+	private void AssertFixed(string input, bool expectedIsFixed, int? expectedFixedNumber)
+	{
+		var result = _parser.Parse(input);
+
+		Assert.Equal(expectedFixedNumber, result.FixedNumber);
+		Assert.Equal(expectedIsFixed, result.IsFixed);
+	}
+
 	private void AssertDigital(string input, bool expected)
 	{
 		var result = _parser.Parse(input);

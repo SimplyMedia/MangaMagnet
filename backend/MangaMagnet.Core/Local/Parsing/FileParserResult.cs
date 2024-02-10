@@ -7,5 +7,7 @@ public record FileParserResult(
 	int? VolumeNumber,
 	double? ChapterNumber,
 	string? ReleaseGroup,
-	bool IsDigital = false
+	bool IsDigital = false,
+	bool IsFixed = false,
+	int? FixedNumber = null
 );
