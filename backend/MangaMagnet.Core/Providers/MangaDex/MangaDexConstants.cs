@@ -1,4 +1,5 @@
-﻿using MangaMagnet.Core.Providers.MangaDex.Models;
+﻿using System.Text.RegularExpressions;
+using MangaMagnet.Core.Providers.MangaDex.Models;
 using MangaMagnet.Core.Providers.MangaDex.Models.Download;
 using MangaMagnet.Core.Util;
 

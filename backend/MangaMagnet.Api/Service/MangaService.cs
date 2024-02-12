@@ -1,11 +1,12 @@
 ﻿using MangaMagnet.Api.Exceptions;
 using MangaMagnet.Api.Models.Response;
 using MangaMagnet.Core.Database;
+using MangaMagnet.Core.Download;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaMagnet.Api.Service;
 
-public class MangaService(ILogger<MangaService> logger, BaseDatabaseContext dbContext, EntityConverterService entityConverterService, MetadataService metadataService)
+public class MangaService(ILogger<MangaService> logger, BaseDatabaseContext dbContext, EntityConverterService entityConverterService, MetadataService metadataService, DownloadService downloadService)
 {
     public async Task<MangaResponse> CreateAsync(string mangaDexId, string path, CancellationToken cancellationToken = default)
     {
@@ -72,5 +73,14 @@ public class MangaService(ILogger<MangaService> logger, BaseDatabaseContext dbCo
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return entityConverterService.ConvertLocalMangaToResponse(localManga);
+    }
+
+    public async Task DownloadChapterAsync(Guid id, double chapterNumber)
+    {
+	    var localManga = await dbContext.LocalMangas
+		    .Include(m => m.Metadata)
+		    .FirstOrDefaultAsync(m => m.Id == id) ?? throw new NotFoundException("Manga not found");
+
+	    await downloadService.DownloadChapterAsCBZAsync(id, chapterNumber, localManga.Path);
     }
 }

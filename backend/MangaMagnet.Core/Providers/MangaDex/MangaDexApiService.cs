@@ -1,7 +1,8 @@
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using MangaMagnet.Core.Progress.Models;
 using MangaMagnet.Core.Providers.MangaDex.Models;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api.Chapter;
@@ -106,7 +107,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		return chapters;
 	}
 
-	public async Task<List<string>> DownloadMangaChapterPagesAsync(string downloadPath, string chapterId, MangaDexQuality quality,
+	public async Task<List<string>> DownloadMangaChapterPagesAsync(string downloadPath, string chapterId, MangaDexQuality quality, ProgressTask task,
 		CancellationToken cancellationToken = default)
 	{
 		var (_, baseUrl, chapter) = await SendAndParseGetRequestAsync<MangaDexChapterPagesResponse>(
@@ -116,6 +117,8 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		var pageHashes = quality == MangaDexQuality.ORIGINAL
 			? chapter.Data
 			: chapter.DataSaver;
+
+		task.Total = pageHashes.Count;
 
 		const int chunkSize = 20;
 
@@ -127,6 +130,9 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 				=> DownloadAndWritePageToDiskAsync(baseUrl, quality, pageName, chapter.Hash, downloadPath, cancellationToken)).ToList();
 
 			paths.AddRange(await Task.WhenAll(tasks));
+
+			for (var i = 0; i < tasks.Count; i++)
+				task.Increment();
 
 			logger.LogInformation("Downloaded {Count} pages", tasks.Count);
 		}
@@ -216,6 +222,8 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		request.Content = JsonContent.Create(requestBody, new MediaTypeHeaderValue("application/json"));
 
 		await SendRequestAsync(request, true, cancellationToken);
+
+		logger.LogDebug("Sent image download report to MangaDex");
 	}
 
 	private async Task<T> SendAndParseGetRequestAsync<T>(string requestUri, bool useRealHeaders = false,

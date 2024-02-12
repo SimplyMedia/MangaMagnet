@@ -1,4 +1,5 @@
-﻿using MangaMagnet.Core.Providers.MangaDex.Models;
+﻿using MangaMagnet.Core.Progress.Models;
+using MangaMagnet.Core.Providers.MangaDex.Models;
 using MangaMagnet.Core.Providers.MangaDex.Models.Download;
 using Microsoft.Extensions.Logging;
 
@@ -6,7 +7,7 @@ namespace MangaMagnet.Core.Providers.MangaDex;
 
 public class MangaDexDownloadService(ILogger<MangaDexDownloadService> logger, MangaDexApiService mangaDexApiService)
 {
-	public async Task<MangaDexDownloadResult> DownloadChapterPagesAsync(double chapterNumber, string mangaDexId, CancellationToken cancellationToken)
+	public async Task<MangaDexDownloadResult> DownloadChapterPagesAsync(double chapterNumber, string mangaDexId, ProgressTask task, CancellationToken cancellationToken)
 	{
 		var mangadexChapters = await mangaDexApiService.FetchMangaChapters(mangaDexId, cancellationToken);
 
@@ -29,7 +30,7 @@ public class MangaDexDownloadService(ILogger<MangaDexDownloadService> logger, Ma
 		await Task.Run(() => Directory.CreateDirectory(tempPageFolder), cancellationToken);
 		logger.LogDebug("Created temporary directory {Path}", tempPageFolder);
 
-		var imagePaths = await mangaDexApiService.DownloadMangaChapterPagesAsync(tempPageFolder, chapterId, MangaDexQuality.ORIGINAL, cancellationToken);
+		var imagePaths = await mangaDexApiService.DownloadMangaChapterPagesAsync(tempPageFolder, chapterId, MangaDexQuality.ORIGINAL, task, cancellationToken);
 		return new MangaDexDownloadResult(imagePaths, tempPageFolder, new MangaDexDownloadMetadata(scanlationGroup, chapterTitle, uploadedAt, volume));
 	}
 }
