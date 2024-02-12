@@ -14,9 +14,9 @@ export default function VolumeList({chapters}: { chapters: ChapterMetadataRespon
 	const volumeNumber = chapters[0].volumeNumber;
 
 	return (
-		<div className={"border border-gray-600 m-4 cursor-pointer radius overflow-hidden"}
-			 onClick={() => setVisible(!visible)}>
-			<div className={`p-4 flex items-center bg-gray-800 border-gray-600 ${visible ? 'border-b' : ''}`}>
+		<div className={"border border-gray-600 m-4 cursor-pointer radius overflow-hidden"}>
+			<div className={`p-4 flex items-center bg-gray-800 border-gray-600 ${visible ? 'border-b' : ''}`}
+				 onClick={() => setVisible(!visible)}>
 				<div className={"flex-1 font-bold"}>
 					{volumeNumber === null ? 'No volume' : `Volume ${volumeNumber}`}
 				</div>
