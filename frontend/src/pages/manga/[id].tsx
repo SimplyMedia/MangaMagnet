@@ -2,8 +2,8 @@ import { Layout } from "@/components/layout/Layout";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { MangaResponse, MangaService } from "@/services/openapi";
-import VolumeOverview from "@/components/manga/volume/VolumeOverview";
 import MangaHeader from "@/components/manga/MangaHeader";
+import { VolumeOverview } from "@/components/manga/volume/VolumeOverview";
 
 export default function MangaPage() {
 	const [manga, setManga] = useState<MangaResponse | null>(null);

@@ -7,7 +7,7 @@ import Markdown from "react-markdown";
 import React from "react";
 import MangaExternalLink, { MangaExternalLinkType } from "@/components/manga/MangaExternalLink";
 
-function formatSizeUnits(bytes: number) {
+export function formatSizeUnits(bytes: number) {
 	if (bytes >= 1073741824) {
 		return (bytes / 1073741824).toFixed(2) + " GB";
 	} else if (bytes >= 1048576) {

@@ -131,4 +131,33 @@ export class MangaService {
             },
         });
     }
+    /**
+     * @param id
+     * @param chapterNumber
+     * @param xVersion
+     * @param v
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static mangaDownloadSingle(
+        id: string,
+        chapterNumber: number,
+        xVersion?: string,
+        v?: string,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/Manga/{id}/{chapterNumber}',
+            path: {
+                'id': id,
+                'chapterNumber': chapterNumber,
+            },
+            headers: {
+                'X-Version': xVersion,
+            },
+            query: {
+                'v': v,
+            },
+        });
+    }
 }

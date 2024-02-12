@@ -27,4 +27,33 @@ export class TestService {
             },
         });
     }
+    /**
+     * @param id
+     * @param chapterNumber
+     * @param xVersion
+     * @param v
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static testTestDownload(
+        id: string,
+        chapterNumber: number,
+        xVersion?: string,
+        v?: string,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/Test/download/{id}/{chapterNumber}',
+            path: {
+                'id': id,
+                'chapterNumber': chapterNumber,
+            },
+            headers: {
+                'X-Version': xVersion,
+            },
+            query: {
+                'v': v,
+            },
+        });
+    }
 }
