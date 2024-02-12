@@ -10,7 +10,8 @@ namespace MangaMagnet.Core.CBZ.ComicInfo;
 public class ComicInfoService(ILogger<ComicInfoService> logger)
 {
 	private readonly IExtendedXmlSerializer _serializer = new ConfigurationContainer()
-		.Emit(EmitBehaviors.WhenAssigned)
+		.Emit(EmitBehaviors.WhenModified)
+		.EnableParameterizedContentWithPropertyAssignments()
 		.UseOptimizedNamespaces()
 		.Create();
 
