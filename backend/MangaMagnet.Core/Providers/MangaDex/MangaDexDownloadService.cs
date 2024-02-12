@@ -12,7 +12,13 @@ public class MangaDexDownloadService(ILogger<MangaDexDownloadService> logger, Ma
 
 		var chapters = mangadexChapters.FindAll(x => x.Attributes.Chapter == chapterNumber.ToString());
 
-		var (chapterId, _, attributes, relationships) = chapters.First(c => c.Attributes.TranslatedLanguage == "en");
+		var englishChapter = chapters.FirstOrDefault(c => c.Attributes.TranslatedLanguage == "en");
+
+		if (englishChapter == null)
+			throw new Exception("No English chapter found");
+
+		var (chapterId, _, attributes, relationships) = englishChapter;
+
 		var chapterTitle = attributes.Title;
 		var uploadedAt = attributes.PublishAt;
 		int? volume = string.IsNullOrEmpty(attributes.Volume) ? null : int.Parse(attributes.Volume);
