@@ -1,4 +1,6 @@
-﻿using MangaMagnet.Core.Util;
+﻿using MangaMagnet.Core.Providers.MangaDex.Models;
+using MangaMagnet.Core.Providers.MangaDex.Models.Download;
+using MangaMagnet.Core.Util;
 
 namespace MangaMagnet.Core.Providers.MangaDex;
 

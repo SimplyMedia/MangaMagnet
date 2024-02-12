@@ -1,10 +1,8 @@
 ﻿using System.Text;
 using System.Xml;
-using System.Xml.Serialization;
 using ExtendedXmlSerializer;
 using ExtendedXmlSerializer.Configuration;
 using MangaMagnet.Core.CBZ.ComicInfo.XML;
-using MangaMagnet.Core.Database;
 using Microsoft.Extensions.Logging;
 
 namespace MangaMagnet.Core.CBZ.ComicInfo;
@@ -12,12 +10,14 @@ namespace MangaMagnet.Core.CBZ.ComicInfo;
 public class ComicInfoService(ILogger<ComicInfoService> logger)
 {
 	private readonly IExtendedXmlSerializer _serializer = new ConfigurationContainer()
-		.Emit(EmitBehaviors.WhenModified)
+		.Emit(EmitBehaviors.WhenAssigned)
 		.UseOptimizedNamespaces()
 		.Create();
 
-	public XmlComicInfo Create(List<string> pagePaths, string scanlationGroup, string? chapterTitle, double? chapter, int? volume, DateTimeOffset? uploadedAt, MangaMetadata metadata, ComicInfoVersion version)
+	public XmlComicInfo Create(ComicInfoInput input)
 	{
+		var (pagePaths, (scanlationGroup, chapterTitle, chapterNumber, volumeNumber, uploadedAt), mangaMetadata, version) = input;
+
 		var pages = pagePaths
 			.Select(path => new FileInfo(path))
 			.Select(file => new PageInfo { Image = int.Parse(file.Name.Split(".").First()), ImageSize = file.Length, })
@@ -26,17 +26,17 @@ public class ComicInfoService(ILogger<ComicInfoService> logger)
 		var comicInfo = new ComicInfo
 		{
 			Title = chapterTitle,
-			Series = metadata.DisplayTitle,
-			AlternateSeries = string.Join(",", metadata.Aliases),
-			Number = chapter?.ToString(),
-			Volume = volume ?? 0,
-			Summary = metadata.Description,
-			Year = uploadedAt?.Year ?? 0,
-			Month = uploadedAt?.Month ?? 0,
-			Day = uploadedAt?.Day ?? 0,
-			Writer = metadata.Author,
-			Penciller = metadata.Artist,
-			Genre = string.Join(",", metadata.Genres),
+			Series = mangaMetadata.DisplayTitle,
+			AlternateSeries = string.Join(",", mangaMetadata.Aliases),
+			Number = chapterNumber.ToString(),
+			Volume = volumeNumber,
+			Summary = mangaMetadata.Description,
+			Year = uploadedAt?.Year,
+			Month = uploadedAt?.Month,
+			Day = uploadedAt?.Day,
+			Writer = mangaMetadata.Author,
+			Penciller = mangaMetadata.Artist,
+			Genre = string.Join(",", mangaMetadata.Genres),
 			PageCount = pages.Count,
 			LanguageISO = "en",
 			Pages = pages,

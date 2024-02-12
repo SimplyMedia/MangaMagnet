@@ -3,11 +3,13 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using MangaMagnet.Core.Providers.MangaDex.Models;
-using MangaMagnet.Core.Providers.MangaDex.Models.Chapter;
-using MangaMagnet.Core.Providers.MangaDex.Models.ChapterPages;
-using MangaMagnet.Core.Providers.MangaDex.Models.Manga;
-using MangaMagnet.Core.Providers.MangaDex.Models.Report;
-using MangaMagnet.Core.Providers.MangaDex.Models.Statistics;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Chapter;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.ChapterPages;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Manga;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Report;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Statistics;
+using MangaMagnet.Core.Providers.MangaDex.Models.Download;
 using MangaMagnet.Core.Util;
 using Microsoft.Extensions.Logging;
 
@@ -57,8 +59,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 			cancellationToken);
 	}
 
-	public Task<MangaDexStatisticResponse>
-		FetchMangaStatistics(string mangaDexId, CancellationToken cancellationToken = default)
+	public Task<MangaDexStatisticResponse> FetchMangaStatistics(string mangaDexId, CancellationToken cancellationToken = default)
 		=> SendAndParseGetRequestAsync<MangaDexStatisticResponse>(MangaDexConstants.FetchMangaStatisticsUrl(mangaDexId),
 			false, cancellationToken);
 
@@ -237,7 +238,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 	{
 		logger.LogDebug("Request Uri: {Request}", request.RequestUri);
 
-		var headers = useRealHeaders ? HttpHeaderUtil.GetRealHeaders() : HttpHeaderUtil.GetFakeHeaders();
+		var headers = useRealHeaders ? MangaDexHeaderUtil.GetRealHeaders() : MangaDexHeaderUtil.GetFakeHeaders();
 
 		foreach (var (key, value) in headers)
 			request.Headers.Add(key, value);
@@ -248,7 +249,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		var response = await httpClient.SendAsync(request, cancellationToken);
 
 		if (!response.IsSuccessStatusCode)
-			throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
+			throw new HttpRequestException($"Request failed with status code {response.StatusCode}: {await response.Content.ReadAsStringAsync(cancellationToken)}");
 
 		return response;
 	}

@@ -1,5 +1,4 @@
 using System.Data;
-using System.Net;
 using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
@@ -14,11 +13,9 @@ using MangaMagnet.Core.CBZ;
 using MangaMagnet.Core.CBZ.ComicInfo;
 using MangaMagnet.Core.Database;
 using MangaMagnet.Core.Download;
-using MangaMagnet.Core.Metadata;
-using MangaMagnet.Core.Metadata.MangaDex;
 using MangaMagnet.Core.Progress;
 using MangaMagnet.Core.Progress.Models;
-using MangaMagnet.Core.Providers.MangaDex;
+using MangaMagnet.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Quartz;
@@ -53,22 +50,7 @@ builder.Host.UseSerilog((_, _, loggerConfiguration) =>
             theme: SystemConsoleTheme.Colored);
 });
 
-builder.Services.AddHttpClient("MangaDex")
-	.ConfigurePrimaryHttpMessageHandler(() =>
-	{
-		var handler = new HttpClientHandler();
-
-		if (handler.SupportsAutomaticDecompression)
-		{
-			handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
-		}
-
-        return handler;
-	});
-
-builder.Services.AddSingleton<MangaDexApiService>();
-builder.Services.AddSingleton<MangaDexConverterService>();
-builder.Services.AddSingleton<IMetadataFetcher, MangaDexMetadataFetcher>();
+builder.Services.AddMangaDexServices();
 builder.Services.AddSingleton<EntityConverterService>();
 builder.Services.AddSingleton<CbzService>();
 builder.Services.AddSingleton<ComicInfoService>();

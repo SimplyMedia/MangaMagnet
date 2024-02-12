@@ -9,25 +9,25 @@ public class Page {
 	public int Image { get; set; }
 
 	[XmlAttribute(AttributeName="Type")]
-	public string Type { get; set; }
+	public string? Type { get; set; }
 
 	[XmlAttribute(AttributeName="DoublePage")]
-	public bool DoublePage { get; set; }
+	public bool? DoublePage { get; set; }
 
 	[XmlAttribute(AttributeName="ImageSize")]
-	public long ImageSize { get; set; }
+	public long? ImageSize { get; set; }
 
 	[XmlAttribute(AttributeName="Key")]
-	public string Key { get; set; }
+	public string? Key { get; set; }
 
 	[XmlAttribute(AttributeName="Bookmark")]
-	public string Bookmark { get; set; }
+	public string? Bookmark { get; set; }
 
 	[XmlAttribute(AttributeName="ImageWidth")]
-	public int ImageWidth { get; set; }
+	public int? ImageWidth { get; set; }
 
 	[XmlAttribute(AttributeName="ImageHeight")]
-	public int ImageHeight { get; set; }
+	public int? ImageHeight { get; set; }
 }
 
 [XmlRoot(ElementName="Pages")]
@@ -41,131 +41,131 @@ public class Pages {
 public class XmlComicInfo {
 
 	[XmlElement(ElementName="Title")]
-	public string Title { get; set; }
+	public string? Title { get; set; }
 
 	[XmlElement(ElementName="Series")]
-	public string Series { get; set; }
+	public string? Series { get; set; }
 
 	[XmlElement(ElementName="Number")]
-	public string Number { get; set; }
+	public string? Number { get; set; }
 
 	[XmlElement(ElementName="Count")]
-	public int Count { get; set; }
+	public int? Count { get; set; }
 
 	[XmlElement(ElementName="Volume")]
-	public int Volume { get; set; }
+	public int? Volume { get; set; }
 
 	[XmlElement(ElementName="AlternateSeries")]
-	public string AlternateSeries { get; set; }
+	public string? AlternateSeries { get; set; }
 
 	[XmlElement(ElementName="AlternateNumber")]
-	public string AlternateNumber { get; set; }
+	public string? AlternateNumber { get; set; }
 
 	[XmlElement(ElementName="AlternateCount")]
-	public int AlternateCount { get; set; }
+	public int? AlternateCount { get; set; }
 
 	[XmlElement(ElementName="Summary")]
-	public string Summary { get; set; }
+	public string? Summary { get; set; }
 
 	[XmlElement(ElementName="Notes")]
-	public string Notes { get; set; }
+	public string? Notes { get; set; }
 
 	[XmlElement(ElementName="Year")]
-	public int Year { get; set; }
+	public int? Year { get; set; }
 
 	[XmlElement(ElementName="Month")]
-	public int Month { get; set; }
+	public int? Month { get; set; }
 
 	[XmlElement(ElementName="Day")]
-	public int Day { get; set; }
+	public int? Day { get; set; }
 
 	[XmlElement(ElementName="Writer")]
-	public string Writer { get; set; }
+	public string? Writer { get; set; }
 
 	[XmlElement(ElementName="Penciller")]
-	public string Penciller { get; set; }
+	public string? Penciller { get; set; }
 
 	[XmlElement(ElementName="Inker")]
-	public string Inker { get; set; }
+	public string? Inker { get; set; }
 
 	[XmlElement(ElementName="Colorist")]
-	public string Colorist { get; set; }
+	public string? Colorist { get; set; }
 
 	[XmlElement(ElementName="Letterer")]
-	public string Letterer { get; set; }
+	public string? Letterer { get; set; }
 
 	[XmlElement(ElementName="CoverArtist")]
-	public string CoverArtist { get; set; }
+	public string? CoverArtist { get; set; }
 
 	[XmlElement(ElementName="Editor")]
-	public string Editor { get; set; }
+	public string? Editor { get; set; }
 
 	[XmlElement(ElementName="Publisher")]
-	public string Publisher { get; set; }
+	public string? Publisher { get; set; }
 
 	[XmlElement(ElementName="Imprint")]
-	public string Imprint { get; set; }
+	public string? Imprint { get; set; }
 
 	[XmlElement(ElementName="Genre")]
-	public string Genre { get; set; }
+	public string? Genre { get; set; }
 
 	[XmlElement(ElementName="Web")]
-	public string Web { get; set; }
+	public string? Web { get; set; }
 
 	[XmlElement(ElementName="PageCount")]
-	public int PageCount { get; set; }
+	public int? PageCount { get; set; }
 
 	[XmlElement(ElementName="LanguageISO")]
-	public string LanguageISO { get; set; }
+	public string? LanguageISO { get; set; }
 
 	[XmlElement(ElementName="Format")]
-	public string Format { get; set; }
+	public string? Format { get; set; }
 
 	[XmlElement(ElementName="BlackAndWhite")]
-	public string BlackAndWhite { get; set; }
+	public string? BlackAndWhite { get; set; }
 
 	[XmlElement(ElementName="Manga")]
-	public string Manga { get; set; }
+	public string? Manga { get; set; }
 
 	[XmlElement(ElementName="Characters")]
-	public string Characters { get; set; }
+	public string? Characters { get; set; }
 
 	[XmlElement(ElementName="Teams")]
-	public string Teams { get; set; }
+	public string? Teams { get; set; }
 
 	[XmlElement(ElementName="Locations")]
-	public string Locations { get; set; }
+	public string? Locations { get; set; }
 
 	[XmlElement(ElementName="ScanInformation")]
-	public string ScanInformation { get; set; }
+	public string? ScanInformation { get; set; }
 
 	[XmlElement(ElementName="StoryArc")]
-	public string StoryArc { get; set; }
+	public string? StoryArc { get; set; }
 
 	[XmlElement(ElementName="SeriesGroup")]
-	public string SeriesGroup { get; set; }
+	public string? SeriesGroup { get; set; }
 
 	[XmlElement(ElementName="AgeRating")]
-	public string AgeRating { get; set; }
+	public string? AgeRating { get; set; }
 
 	[XmlElement(ElementName="Pages")]
-	public Pages Pages { get; set; }
+	public Pages? Pages { get; set; }
 
 	[XmlElement(ElementName="CommunityRating")]
-	public double CommunityRating { get; set; }
+	public double? CommunityRating { get; set; }
 
 	[XmlElement(ElementName="MainCharacterOrTeam")]
-	public string MainCharacterOrTeam { get; set; }
+	public string? MainCharacterOrTeam { get; set; }
 
 	[XmlElement(ElementName="Review")]
-	public string Review { get; set; }
+	public string? Review { get; set; }
 
 	[XmlAttribute(AttributeName="noNamespaceSchemaLocation")]
-	public string NoNamespaceSchemaLocation { get; set; }
+	public string? NoNamespaceSchemaLocation { get; set; }
 
 	[XmlAttribute(AttributeName="xsi")]
-	public string Xsi { get; set; }
+	public string? Xsi { get; set; }
 
 	[XmlText]
-	public string Text { get; set; }
+	public string? Text { get; set; }
 }

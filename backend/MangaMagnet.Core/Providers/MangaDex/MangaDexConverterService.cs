@@ -1,8 +1,9 @@
 ﻿using MangaMagnet.Core.Database;
 using MangaMagnet.Core.Metadata;
 using MangaMagnet.Core.Providers.MangaDex.Models;
-using MangaMagnet.Core.Providers.MangaDex.Models.Manga;
-using MangaMagnet.Core.Providers.MangaDex.Models.Statistics;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Manga;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Statistics;
 
 namespace MangaMagnet.Core.Providers.MangaDex;
 

@@ -5,96 +5,93 @@ namespace MangaMagnet.Core.CBZ.ComicInfo;
 
 public class ComicInfo : IVersioned<XmlComicInfo>
 {
-	public string Title { get; set; }
+	public string? Title { get; set; }
 
-	public string Series { get; set; }
+	public string? Series { get; set; }
 
-	public string Number { get; set; }
+	public string? Number { get; set; }
 
-	public int Count { get; set; }
+	public int? Count { get; set; }
 
-	public int Volume { get; set; }
+	public int? Volume { get; set; }
 
-	public string AlternateSeries { get; set; }
+	public string? AlternateSeries { get; set; }
 
-	public string AlternateNumber { get; set; }
+	public string? AlternateNumber { get; set; }
 
-	public int AlternateCount { get; set; }
+	public int? AlternateCount { get; set; }
 
-	public string Summary { get; set; }
+	public string? Summary { get; set; }
 
-	public string Notes { get; set; }
+	public string? Notes { get; set; }
 
-	public int Year { get; set; }
+	public int? Year { get; set; }
 
-	public int Month { get; set; }
+	public int? Month { get; set; }
 
-	public int Day { get; set; }
+	public int? Day { get; set; }
 
-	public string Writer { get; set; }
+	public string? Writer { get; set; }
 
-	public string Penciller { get; set; }
+	public string? Penciller { get; set; }
 
-	public string Inker { get; set; }
+	public string? Inker { get; set; }
 
-	public string Colorist { get; set; }
+	public string? Colorist { get; set; }
 
-	public string Letterer { get; set; }
+	public string? Letterer { get; set; }
 
-	public string CoverArtist { get; set; }
+	public string? CoverArtist { get; set; }
 
-	public string Editor { get; set; }
+	public string? Editor { get; set; }
 
-	public string Publisher { get; set; }
+	public string? Publisher { get; set; }
 
-	public string Imprint { get; set; }
+	public string? Imprint { get; set; }
 
-	public string Genre { get; set; }
+	public string? Genre { get; set; }
 
-	public string Web { get; set; }
+	public string? Web { get; set; }
 
-	public int PageCount { get; set; }
+	public int? PageCount { get; set; }
 
-	public string LanguageISO { get; set; }
+	public string? LanguageISO { get; set; }
 
-	public string Format { get; set; }
+	public string? Format { get; set; }
 
-	public YesNo BlackAndWhite { get; set; }
+	public YesNo? BlackAndWhite { get; set; }
 
-	public Manga Manga { get; set; }
+	public Manga? Manga { get; set; }
 
-	public string Characters { get; set; }
+	public string? Characters { get; set; }
 
-	public string Teams { get; set; }
+	public string? Teams { get; set; }
 
-	public string Locations { get; set; }
+	public string? Locations { get; set; }
 
-	public string ScanInformation { get; set; }
+	public string? ScanInformation { get; set; }
 
-	public string StoryArc { get; set; }
+	public string? StoryArc { get; set; }
 
-	public string SeriesGroup { get; set; }
+	public string? SeriesGroup { get; set; }
 
-	public AgeRating AgeRating { get; set; }
+	public AgeRating? AgeRating { get; set; }
 
-	public List<PageInfo> Pages { get; set; }
+	public List<PageInfo>? Pages { get; set; }
 
-	public double CommunityRating { get; set; }
+	public double? CommunityRating { get; set; }
 
-	public string MainCharacterOrTeam { get; set; }
+	public string? MainCharacterOrTeam { get; set; }
 
-	public string Review { get; set; }
+	public string? Review { get; set; }
 
 	public XmlComicInfo GetForVersion(Version version)
+		=> version.Major switch
 	{
-		if (version.Major == 1)
-			return ToV1Xml();
-
-		if (version.Major == 2)
-			return ToV2Xml();
-
-		throw new NotSupportedException($"Version {version} is not supported");
-	}
+		1 => ToV1Xml(),
+		2 => ToV2Xml(),
+		_ => throw new NotSupportedException($"Version {version} is not supported")
+	};
 
 	private XmlComicInfo ToV1Xml()
 		=> new()
@@ -125,11 +122,11 @@ public class ComicInfo : IVersioned<XmlComicInfo>
 			PageCount = PageCount,
 			LanguageISO = LanguageISO,
 			Format = Format,
-			BlackAndWhite = BlackAndWhite.GetDisplayName(),
-			Manga = ComicInfoUtil.GetYesNoFromManga(Manga).GetDisplayName(),
-			Pages = new Pages
+			BlackAndWhite = BlackAndWhite?.GetDisplayName(),
+			Manga = Manga == null ? null : ComicInfoUtil.GetYesNoFromManga((Manga) Manga).GetDisplayName(),
+			Pages = Pages is { Count: 0 } ?  null : new Pages
 			{
-				Page = Pages.Select(p => new Page
+				Page = Pages!.Select(p => new Page
 				{
 					Image = p.Image,
 					Type = p.Type.GetDisplayName(),
@@ -172,18 +169,18 @@ public class ComicInfo : IVersioned<XmlComicInfo>
 			PageCount = PageCount,
 			LanguageISO = LanguageISO,
 			Format = Format,
-			BlackAndWhite = BlackAndWhite.GetDisplayName(),
-			Manga = Manga.GetDisplayName(),
+			BlackAndWhite = BlackAndWhite?.GetDisplayName(),
+			Manga = Manga?.GetDisplayName(),
 			Characters = Characters,
 			Teams = Teams,
 			Locations = Locations,
 			ScanInformation = ScanInformation,
 			StoryArc = StoryArc,
 			SeriesGroup = SeriesGroup,
-			AgeRating = AgeRating.GetDisplayName(),
-			Pages = new Pages
+			AgeRating = AgeRating?.GetDisplayName(),
+			Pages = Pages is { Count: 0 } ?  null : new Pages
 			{
-				Page = Pages.Select(p => new Page
+				Page = Pages!.Select(p => new Page
 				{
 					Image = p.Image,
 					Type = p.Type.GetDisplayName(),

@@ -28,7 +28,7 @@ public class TestController(ProgressService progressService, DownloadService dow
 	[HttpPost("download/{id:guid}/{chapterNumber:double}")]
 	public async Task<IActionResult> TestDownload(Guid id, double chapterNumber)
 	{
-		await downloadService.DownloadChapterAsync(chapterNumber, id.ToString(), "E:/Temp");
+		await downloadService.DownloadChapterAsCBZAsync(chapterNumber, id.ToString(), "E:/Temp");
 
 		return Ok();
 	}

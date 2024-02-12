@@ -6,38 +6,29 @@ using Microsoft.Extensions.Logging;
 
 namespace MangaMagnet.Core.Download;
 
-public class DownloadService(ILogger<DownloadService> logger, CbzService cbzService, ComicInfoService comicInfoService, MangaDexApiService mangaDexApiService, BaseDatabaseContext dbContext)
+public class DownloadService(ILogger<DownloadService> logger, CbzService cbzService, ComicInfoService comicInfoService, MangaDexDownloadService mangaDexDownloadService, BaseDatabaseContext dbContext)
 {
-	public async Task DownloadChapterAsync(double chapterNumber, string mangaDexId, string outputDirectory, CancellationToken cancellationToken = default)
+	public async Task DownloadChapterAsCBZAsync(double chapterNumber, string mangaDexId, string outputPath, CancellationToken cancellationToken = default)
 	{
 		var mangaMetadata = dbContext.MangaMetadata.FirstOrDefault(m => m.MangaDexId == mangaDexId)
 		                    ?? throw new Exception("Manga metadata not found");
 
-		var mangadexChapters = await mangaDexApiService.FetchMangaChapters(mangaDexId, cancellationToken);
+		var (pages, tempPath, metadata) = await mangaDexDownloadService.DownloadChapterPagesAsync(chapterNumber, mangaDexId, cancellationToken);
 
-		var chapters = mangadexChapters.FindAll(x => x.Attributes.Chapter == chapterNumber.ToString());
+		var comicInfoInput = new ComicInfoInput(pages,
+			new ComicInfoChapterMetadata(metadata.ScanlationGroup, metadata.ChapterTitle, chapterNumber, metadata.Volume, metadata.UploadedAt),
+			mangaMetadata,
+			ComicInfoVersion.V2);
 
-		var (chapterId, _, attributes, relationships) = chapters.First(c => c.Attributes.TranslatedLanguage == "en");
-		var chapterTitle = attributes.Title;
-		var uploadedAt = attributes.PublishAt;
-		int? volume = string.IsNullOrEmpty(attributes.Volume) ? null : int.Parse(attributes.Volume);
-		var scanlationGroup = relationships.First(x => x.Type == "scanlation_group").Attributes.Name;
+		var comicInfo = comicInfoService.Create(comicInfoInput);
+		await comicInfoService.WriteAsync(comicInfo, tempPath, cancellationToken);
 
-		var tempPageFolder = $"{Path.GetTempPath()}/MangaMagnet-{Guid.NewGuid().ToString()}";
+		var fileName = $"{mangaMetadata.DisplayTitle} {chapterNumber}.cbz";
 
-		await Task.Run(() => Directory.CreateDirectory(tempPageFolder), cancellationToken);
-		logger.LogDebug("Created temporary directory {Path}", tempPageFolder);
+		await cbzService.CreateAsync(tempPath, outputPath, fileName, cancellationToken);
 
-		var imagePaths = await mangaDexApiService.DownloadMangaChapterPagesAsync(tempPageFolder, chapterId, MangaDexQuality.ORIGINAL, cancellationToken);
+		await Task.Run(() => Directory.Delete(tempPath, true), cancellationToken);
 
-		var comicInfo = comicInfoService.Create(imagePaths, scanlationGroup, chapterTitle, chapterNumber, volume, uploadedAt, mangaMetadata, ComicInfoVersion.V2);
-
-		await comicInfoService.WriteAsync(comicInfo, tempPageFolder, cancellationToken);
-
-		await cbzService.CreateAsync(tempPageFolder, outputDirectory, "test", cancellationToken);
-
-		await Task.Run(() => Directory.Delete(tempPageFolder, true), cancellationToken);
-
-		logger.LogDebug("Deleted temporary directory {Path}", tempPageFolder);
+		logger.LogDebug("Deleted temporary directory {Path}", tempPath);
 	}
 }
