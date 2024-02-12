@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -137,13 +137,16 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 	private async Task<string> DownloadAndWritePageToDiskAsync(string baseUrl, MangaDexQuality quality, string fileName,
 		string chapterHash, string basePath, CancellationToken cancellationToken = default)
 	{
-		var pageNumber = fileName.Split("-").First();
+		var pageNumberMatch = MangaDexRegex.MangaDexPageNumberRegex().Match(fileName);
+
+		var pageNumber = pageNumberMatch.Groups["pageNumber"].Value;
+
 		var fileExtension = fileName.Split(".").Last();
 
 		var imageStream = new MemoryStream();
 		await DownloadMangaChapterPageAsync(baseUrl, quality, fileName, chapterHash, imageStream, cancellationToken);
 
-		var imagePath = $"{basePath}/{pageNumber}.{fileExtension}";
+		var imagePath = Path.Combine(basePath, $"{pageNumber}.{fileExtension}");
 
 		await using var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
 
