@@ -2,6 +2,7 @@ import { ChapterMetadataResponse } from "@/services/openapi";
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import ChapterEntry from "@/components/manga/ChapterEntry";
 
 export default function VolumeList({chapters}: { chapters: ChapterMetadataResponse[] }) {
 	const [visible, setVisible] = useState<boolean>(false);
@@ -26,10 +27,7 @@ export default function VolumeList({chapters}: { chapters: ChapterMetadataRespon
 			</div>
 			<div style={{display: visible ? undefined : 'none'}}>
 				{chapters.map(chapter => (
-					<div key={chapter.id} className={"p-2 px-4 bg-gray-900 odd:bg-gray-800"}>
-                        <span
-							className={"inline-block w-[100px]"}>Ch. {chapter.chapterNumber}</span> {chapter.title ?? `Chapter ${chapter.chapterNumber}`}
-					</div>
+					<ChapterEntry chapter={chapter} key={chapter.id}/>
 				))}
 			</div>
 		</div>
