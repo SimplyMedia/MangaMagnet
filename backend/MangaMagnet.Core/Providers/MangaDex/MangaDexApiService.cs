@@ -1,4 +1,4 @@
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -134,7 +134,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 			for (var i = 0; i < tasks.Count; i++)
 				task.Increment();
 
-			logger.LogInformation("Downloaded {Count} pages", tasks.Count);
+			logger.LogDebug("Downloaded {Count} pages", tasks.Count);
 		}
 
 		return paths;
