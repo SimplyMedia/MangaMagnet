@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -182,7 +182,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		{
 			var stopwatch = Stopwatch.StartNew();
 
-			var response = await SendRequestAsync(request, true, cancellationToken);
+			var response = await SendRequestAsync(request, true, true, cancellationToken);
 			success = true;
 
 			response.Headers.TryGetValues("X-Cache", out var cacheHeader);
@@ -221,7 +221,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 
 		request.Content = JsonContent.Create(requestBody, new MediaTypeHeaderValue("application/json"));
 
-		await SendRequestAsync(request, true, cancellationToken);
+		await SendRequestAsync(request, true, false, cancellationToken);
 
 		logger.LogDebug("Sent image download report to MangaDex");
 	}
@@ -238,13 +238,13 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 			useRealHeaders = false,
 		CancellationToken cancellationToken = default)
 	{
-		using var responseMessage = await SendRequestAsync(request, useRealHeaders, cancellationToken);
+		using var responseMessage = await SendRequestAsync(request, useRealHeaders, false, cancellationToken);
 
 		return await responseMessage.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken) ??
 		       throw new Exception("Failed to deserialize response");
 	}
 
-	private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, bool useRealHeaders = false,
+	private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, bool useRealHeaders = false, bool ignoreRateLimit = false,
 		CancellationToken cancellationToken = default)
 	{
 		logger.LogDebug("Request Uri: {Request}", request.RequestUri);
@@ -254,7 +254,13 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		foreach (var (key, value) in headers)
 			request.Headers.Add(key, value);
 
-		await RateLimiter.AcquireAsync(cancellationToken: cancellationToken);
+		if (!ignoreRateLimit)
+		{
+			using var lease = await RateLimiter.AcquireAsync(cancellationToken: cancellationToken);
+
+			if (lease.IsAcquired != true)
+				throw new Exception("Failed to acquire rate limit lease");
+		}
 
 		using var httpClient = httpClientFactory.CreateClient("MangaDex");
 		var response = await httpClient.SendAsync(request, cancellationToken);

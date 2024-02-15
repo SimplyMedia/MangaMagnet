@@ -4,13 +4,13 @@ namespace MangaMagnet.Core.Providers;
 
 public abstract class SimpleRatelimitedProvider
 {
-    protected readonly RateLimiter RateLimiter = new TokenBucketRateLimiter(
-        new TokenBucketRateLimiterOptions
+    protected readonly RateLimiter RateLimiter = new FixedWindowRateLimiter(
+        new FixedWindowRateLimiterOptions
         {
-            ReplenishmentPeriod = TimeSpan.FromSeconds(5),
-            TokensPerPeriod = 10,
-            TokenLimit = 10,
-            AutoReplenishment = true,
-            QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+	        Window = TimeSpan.FromSeconds(2),
+	        AutoReplenishment = true,
+	        PermitLimit = 5,
+	        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+	        QueueLimit = int.MaxValue
         });
 }
