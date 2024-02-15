@@ -11,9 +11,9 @@ public class MangaDexDownloadService(ILogger<MangaDexDownloadService> logger, Ma
 	{
 		var mangadexChapters = await mangaDexApiService.FetchMangaChapters(mangaDexId, cancellationToken);
 
-		var chapters = mangadexChapters.FindAll(x => x.Attributes.Chapter == chapterNumber.ToString());
+		var chapters = mangadexChapters.FindAll(x => x.Attributes.Chapter == chapterNumber.ToString() && x.Attributes.TranslatedLanguage == "en");
 
-		var englishChapter = chapters.FirstOrDefault(c => c.Attributes.TranslatedLanguage == "en");
+		var englishChapter = chapters.FirstOrDefault(c => !c.Relationships.Any(r => r is { Type: "scanlation_group", Attributes.Official: true }));
 
 		if (englishChapter == null)
 			throw new Exception("No English chapter found");
