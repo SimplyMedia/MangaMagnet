@@ -18,7 +18,7 @@ public class DownloadService(ILogger<DownloadService> logger, CbzService cbzServ
 
 		var mangaMetadata = localManga.Metadata;
 
-		var task = progressService.CreateTask($"Downloading Chapter {chapterNumber}");
+		using var task = progressService.CreateTask($"Downloading Chapter {chapterNumber}");
 		task.Description = mangaMetadata.DisplayTitle;
 
 		var (pages, tempPath, metadata) = await mangaDexDownloadService.DownloadChapterPagesAsync(chapterNumber, mangaMetadata.MangaDexId, task, cancellationToken);
@@ -44,7 +44,5 @@ public class DownloadService(ILogger<DownloadService> logger, CbzService cbzServ
 		await Task.Run(() => Directory.Delete(tempPath, true), cancellationToken);
 
 		logger.LogDebug("Deleted temporary directory {Path}", tempPath);
-
-		task.Dispose();
 	}
 }
