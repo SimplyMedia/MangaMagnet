@@ -9,7 +9,7 @@ public class MangaDexDownloadService(ILogger<MangaDexDownloadService> logger, Ma
 {
 	public async Task<MangaDexDownloadResult> DownloadChapterPagesAsync(double chapterNumber, string mangaDexId, ProgressTask task, CancellationToken cancellationToken)
 	{
-		var mangadexChapters = await mangaDexApiService.FetchMangaChapters(mangaDexId, cancellationToken);
+		var mangadexChapters = await mangaDexApiService.FetchAllMangaChaptersAsync(mangaDexId, cancellationToken);
 
 		var chapters = mangadexChapters.FindAll(x => x.Attributes.Chapter == chapterNumber.ToString() && x.Attributes.TranslatedLanguage == "en");
 

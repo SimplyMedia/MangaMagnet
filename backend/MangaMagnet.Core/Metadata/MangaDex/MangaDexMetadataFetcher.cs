@@ -1,4 +1,5 @@
 ﻿using MangaMagnet.Core.Providers.MangaDex;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Chapter;
 
 namespace MangaMagnet.Core.Metadata.MangaDex;
 
@@ -15,37 +16,46 @@ public class MangaDexMetadataFetcher(MangaDexApiService mangaDexApiService, Mang
     {
         var mangaDexMangaData = await mangaDexApiService.FetchMangaMetadataByIdAsync(id, cancellationToken);
 
-        var mangaDexStatistic = await mangaDexApiService.FetchMangaStatistics(id, cancellationToken);
+        var mangaDexStatistic = await mangaDexApiService.FetchMangaStatisticsAsync(id, cancellationToken);
 
         return mangaDexConverterService.ConvertToMangaMetadataResult(mangaDexMangaData, mangaDexStatistic.Statistics.First().Value);
     }
 
     public async Task<List<ChapterMetadataResult>> FetchAllChapterMetadataAsync(string id, CancellationToken cancellationToken = default)
     {
-        var mangaDexChapterData = await mangaDexApiService.FetchMangaChapters(id, cancellationToken);
-        var grouped = mangaDexChapterData.GroupBy(d => d.Attributes.Chapter);
+	    var mangaDexChapterData = await mangaDexApiService.FetchAllMangaChaptersAsync(id, cancellationToken);
+	    return MapMangaDexChaptersToChapterMetadataResults(mangaDexChapterData);
+    }
 
-        var chapterMetadataResults = new List<ChapterMetadataResult>();
+    public async Task<List<ChapterMetadataResult>> FetchLatestChapterMetadataAsync(string id, CancellationToken cancellationToken = default)
+    {
+	    var latestChapters = await mangaDexApiService.FetchLatestMangaChaptersAsync(id, cancellationToken);
+	    return MapMangaDexChaptersToChapterMetadataResults(latestChapters);
+    }
 
-        foreach (var group in grouped)
-        {
-	        if (!double.TryParse(group.Key, out var chapterNumber))
-		        continue; // We ignore chapters that don't have a number, likely oneshot specials or something
+    private List<ChapterMetadataResult> MapMangaDexChaptersToChapterMetadataResults(IEnumerable<MangaDexChapter> mangaDexChapterData)
+    {
+	    var grouped = mangaDexChapterData.GroupBy(d => d.Attributes.Chapter);
 
-	        var anyChapterReleaseWithVolume = group.FirstOrDefault(c => string.IsNullOrEmpty(c.Attributes.Volume) == false);
+	    var chapterMetadataResults = new List<ChapterMetadataResult>();
 
-	        var volumeNumberNullable = anyChapterReleaseWithVolume?.Attributes.Volume;
-	        int? volumeNumber = volumeNumberNullable != null ? int.Parse(volumeNumberNullable) : null;
+	    foreach (var group in grouped)
+	    {
+		    if (!double.TryParse(group.Key, out var chapterNumber))
+			    continue; // We ignore chapters that don't have a number, likely oneshot specials or something
 
-	        // find first uploaded chapter with a title
-	        var title = group.FirstOrDefault(c => c.Attributes.TranslatedLanguage == "en" && !string.IsNullOrEmpty(c.Attributes.Title))?.Attributes.Title ?? null;
+		    var volumeNumberNullable = group.FirstOrDefault(c => string.IsNullOrEmpty(c.Attributes.Volume) == false)?.Attributes.Volume;
+		    int? volumeNumber = volumeNumberNullable != null ? int.Parse(volumeNumberNullable) : null;
 
-	        chapterMetadataResults.Add(new ChapterMetadataResult(
-		        chapterNumber,
-		        volumeNumber,
-		        title));
-        }
+		    // find first uploaded chapter with a title
+		    var title = group.FirstOrDefault(c => c.Attributes.TranslatedLanguage == "en" && !string.IsNullOrEmpty(c.Attributes.Title))?.Attributes.Title ?? null;
 
-        return chapterMetadataResults;
+		    chapterMetadataResults.Add(new ChapterMetadataResult(
+			    chapterNumber,
+			    volumeNumber,
+			    title));
+	    }
+
+	    return chapterMetadataResults;
     }
 }

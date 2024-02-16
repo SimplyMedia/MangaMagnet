@@ -112,6 +112,53 @@ export class MetadataService {
         });
     }
     /**
+     * @param mangaDexId
+     * @param xVersion
+     * @param v
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static metadataCheckForNewChapters(
+        mangaDexId: string,
+        xVersion?: string,
+        v?: string,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/Metadata/{mangaDexId}/chapters/check',
+            path: {
+                'mangaDexId': mangaDexId,
+            },
+            headers: {
+                'X-Version': xVersion,
+            },
+            query: {
+                'v': v,
+            },
+        });
+    }
+    /**
+     * @param xVersion
+     * @param v
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static metadataCheckAllForNewChapters(
+        xVersion?: string,
+        v?: string,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/Metadata/chapters/check',
+            headers: {
+                'X-Version': xVersion,
+            },
+            query: {
+                'v': v,
+            },
+        });
+    }
+    /**
      * @param xVersion
      * @param v
      * @param requestBody

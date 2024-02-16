@@ -60,11 +60,11 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 			cancellationToken);
 	}
 
-	public Task<MangaDexStatisticResponse> FetchMangaStatistics(string mangaDexId, CancellationToken cancellationToken = default)
+	public Task<MangaDexStatisticResponse> FetchMangaStatisticsAsync(string mangaDexId, CancellationToken cancellationToken = default)
 		=> SendAndParseGetRequestAsync<MangaDexStatisticResponse>(MangaDexConstants.FetchMangaStatisticsUrl(mangaDexId),
 			false, cancellationToken);
 
-	public async Task<List<MangaDexChapter>> FetchMangaChapters(string mangaDexId,
+	public async Task<List<MangaDexChapter>> FetchAllMangaChaptersAsync(string mangaDexId,
 		CancellationToken cancellationToken = default)
 	{
 		var doNextRequest = true;
@@ -75,26 +75,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		{
 			const int limit = 500;
 
-			var queryParams = new NameValueCollection
-			{
-				{ "limit", limit.ToString() },
-				{ "offset", offset.ToString() },
-				{ "includes[]", "scanlation_group" },
-				{ "includes[]", "user" },
-				{ "order[volume]", "desc" },
-				{ "order[chapter]", "desc" },
-				{ "contentRating[]", "safe" },
-				{ "contentRating[]", "suggestive" },
-				{ "contentRating[]", "erotica" },
-				{ "contentRating[]", "pornographic" }
-			};
-
-			var requestUri =
-				UriUtils.BuildUrlWithQueryString(MangaDexConstants.FetchMangaChapterUrl(mangaDexId), queryParams);
-
-			var response =
-				await SendAndParseGetRequestAsync<MangaDexChapterResponse<List<MangaDexChapter>>>(requestUri, false,
-					cancellationToken);
+			var response = await FetchMangaChapterPageAsync(mangaDexId, offset, limit, cancellationToken);
 
 			var responseDataCount = response.Data.Count;
 
@@ -105,6 +86,14 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		}
 
 		return chapters;
+	}
+
+	public async Task<List<MangaDexChapter>> FetchLatestMangaChaptersAsync(string mangaDexId,
+		CancellationToken cancellationToken = default)
+	{
+		var response = await FetchMangaChapterPageAsync(mangaDexId, 0, 50, cancellationToken);
+
+		return response.Data;
 	}
 
 	public async Task<List<string>> DownloadMangaChapterPagesAsync(string downloadPath, string chapterId, MangaDexQuality quality, ProgressTask task,
@@ -138,6 +127,32 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		}
 
 		return paths;
+	}
+
+	private async Task<MangaDexChapterResponse<List<MangaDexChapter>>> FetchMangaChapterPageAsync(string mangaDexId,
+		int offset,
+		int limit,
+		CancellationToken cancellationToken = default)
+	{
+		var queryParams = new NameValueCollection
+		{
+			{ "limit", limit.ToString() },
+			{ "offset", offset.ToString() },
+			{ "includes[]", "scanlation_group" },
+			{ "includes[]", "user" },
+			{ "order[volume]", "desc" },
+			{ "order[chapter]", "desc" },
+			{ "contentRating[]", "safe" },
+			{ "contentRating[]", "suggestive" },
+			{ "contentRating[]", "erotica" },
+			{ "contentRating[]", "pornographic" }
+		};
+
+		var requestUri =
+			UriUtils.BuildUrlWithQueryString(MangaDexConstants.FetchMangaChapterUrl(mangaDexId), queryParams);
+
+		return await SendAndParseGetRequestAsync<MangaDexChapterResponse<List<MangaDexChapter>>>(requestUri, false,
+			cancellationToken);;
 	}
 
 	private async Task<string> DownloadAndWritePageToDiskAsync(string baseUrl, MangaDexQuality quality, string fileName,
@@ -211,10 +226,10 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		var reportBody = new MangaDexReportRequest(requestUri, success, cached, bytes, duration);
 
 		if (!baseUrl.Contains("mangadex.org"))
-			await SendImageDownloadReportToMangaDex(reportBody, cancellationToken);
+			await SendImageDownloadReportToMangaDexAsync(reportBody, cancellationToken);
 	}
 
-	private async Task SendImageDownloadReportToMangaDex(MangaDexReportRequest requestBody,
+	private async Task SendImageDownloadReportToMangaDexAsync(MangaDexReportRequest requestBody,
 		CancellationToken cancellationToken = default)
 	{
 		using var request = new HttpRequestMessage(HttpMethod.Post, MangaDexConstants.ReportMangaUrl);
@@ -270,4 +285,8 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 
 		return response;
 	}
+}
+
+public class MangaDexCoverResponse
+{
 }

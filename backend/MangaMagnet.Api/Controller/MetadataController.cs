@@ -30,6 +30,22 @@ public class MetadataController(MetadataService metadataService) : ControllerBas
 	public async Task<IActionResult> GetAllChaptersAsync([FromRoute] string mangaDexId)
 		=> Ok(await metadataService.FetchAllChapterMetadataAsync(mangaDexId));
 
+	[HttpPost("{mangaDexId}/chapters/check")]
+	[MapToApiVersion("1.0")]
+	public async Task<IActionResult> CheckForNewChaptersAsync([FromRoute] string mangaDexId)
+	{
+		await metadataService.CheckMangaForNewChapterMetadataByIdAsync(mangaDexId);
+		return Ok();
+	}
+
+	[HttpPost("chapters/check")]
+	[MapToApiVersion("1.0")]
+	public async Task<IActionResult> CheckAllForNewChaptersAsync()
+	{
+		await metadataService.CheckAllMangaForNewChapterMetadataAsync();
+		return Ok();
+	}
+
 	[HttpPatch("{mangaDexId}")]
 	[MapToApiVersion("1.0")]
 	[ProducesResponseType(typeof(MangaSearchMetadataResult), (int)HttpStatusCode.OK)]

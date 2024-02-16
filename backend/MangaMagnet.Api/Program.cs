@@ -137,12 +137,19 @@ builder.Services.AddQuartz(q =>
     });
 
     var updateMetadataKey = new JobKey("UpdateMetadataJob", "MangaMagnet");
-    q.AddJob<UpdateMetadataJob>(updateMetadataKey);
+    var checkForNewChaptersKey = new JobKey("CheckForNewChaptersJob", "MangaMagnet");
+    q.AddJob<RefreshMetadataJob>(updateMetadataKey);
+    q.AddJob<CheckForNewChaptersJob>(checkForNewChaptersKey);
 
     q.AddTrigger(t => t
 		.WithIdentity("UpdateMetadataTrigger", "MangaMagnet")
 		.ForJob(updateMetadataKey)
-		.WithCronSchedule("0 0 * * * ?"));
+		.WithCronSchedule("0 0 23 * * ?"));
+
+    q.AddTrigger(t => t
+	    .WithIdentity("CheckForNewChaptersTrigger", "MangaMagnet")
+	    .ForJob(checkForNewChaptersKey)
+	    .WithCronSchedule("0 0/15 * * * ?"));
 });
 builder.Services.AddQuartzHostedService(q =>
 {

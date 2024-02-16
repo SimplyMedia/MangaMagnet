@@ -7,4 +7,6 @@ public interface IMetadataFetcher
     Task<MangaMetadataResult> FetchMangaMetadataAsync(string id, CancellationToken cancellationToken = default);
 
     Task<List<ChapterMetadataResult>> FetchAllChapterMetadataAsync(string id, CancellationToken cancellationToken = default);
+
+    Task<List<ChapterMetadataResult>> FetchLatestChapterMetadataAsync(string id, CancellationToken cancellationToken = default);
 }

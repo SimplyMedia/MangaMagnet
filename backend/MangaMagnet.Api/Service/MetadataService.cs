@@ -3,6 +3,7 @@ using MangaMagnet.Api.Models.Response;
 using MangaMagnet.Core.Database;
 using MangaMagnet.Core.Metadata;
 using MangaMagnet.Core.Progress;
+using MangaMagnet.Core.Progress.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaMagnet.Api.Service;
@@ -69,6 +70,57 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 		return updated;
 	}
 
+	public async Task CheckAllMangaForNewChapterMetadataAsync(CancellationToken cancellationToken = default)
+	{
+		using var progressTask = progressService.CreateTask("Checking for new Chapters");
+
+		var mangaMetadata = await dbContext.MangaMetadata
+			.Include(mangaMetadata => mangaMetadata.ChapterMetadata)
+			.ToListAsync(cancellationToken);
+
+		progressTask.Total = mangaMetadata.Count;
+
+		foreach (var metadata in mangaMetadata)
+			await CheckMangaForNewChapterAsync(progressTask, metadata, cancellationToken);
+	}
+
+	public async Task CheckMangaForNewChapterMetadataByIdAsync(string mangaDexId, CancellationToken cancellationToken = default)
+	{
+		using var progressTask = progressService.CreateTask("Checking for new Chapters");
+
+		var mangaMetadata = await dbContext.MangaMetadata
+			.Include(mangaMetadata => mangaMetadata.ChapterMetadata)
+			.FirstOrDefaultAsync(m => m.MangaDexId == mangaDexId, cancellationToken);
+
+		if (mangaMetadata is null)
+			throw new Exception("");
+
+		progressTask.Total = 1;
+
+		await CheckMangaForNewChapterAsync(progressTask, mangaMetadata, cancellationToken);
+	}
+
+	private async Task CheckMangaForNewChapterAsync(ProgressTask progressTask, MangaMetadata metadata, CancellationToken cancellationToken)
+	{
+		progressTask.Description = metadata.DisplayTitle;
+		var latestChapters = await metadataFetcher.FetchLatestChapterMetadataAsync(metadata.MangaDexId, cancellationToken);
+
+		foreach (var chapter in latestChapters)
+		{
+			var alreadyExists = metadata.ChapterMetadata.Exists(c => Math.Abs(c.ChapterNumber - chapter.ChapterNumber) < 0.01);
+
+			if (alreadyExists) continue;
+
+			var newChapter = entityConverterService.ConvertChapterMetadataResultToDbEntity(chapter, metadata.Id);
+			await dbContext.ChapterMetadata.AddAsync(newChapter, cancellationToken);
+			metadata.ChapterMetadata.Add(newChapter);
+		}
+
+		await dbContext.SaveChangesAsync(cancellationToken);
+
+		progressTask.Increment();
+	}
+
 	private async Task<MangaMetadata> CreateMangaMetadataAsync(string mangaDexId, CancellationToken cancellationToken)
     {
         if (await dbContext.MangaMetadata.AnyAsync(m => m.MangaDexId == mangaDexId, cancellationToken))
@@ -125,6 +177,7 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 			{
 				var newChapter = entityConverterService.ConvertChapterMetadataResultToDbEntity(newOrUpdatedChapter, metadata.Id);
 				await dbContext.ChapterMetadata.AddAsync(newChapter, cancellationToken);
+				metadata.ChapterMetadata.Add(newChapter);
 				newOrUpdatedChapters.Add(newChapter);
 			}
 			else
