@@ -44,7 +44,7 @@ public class MangaController(MangaService mangaService) : ControllerBase
     public async Task<IActionResult> GetSingleAsync([FromRoute] Guid id)
         => Ok(await mangaService.GetByIdAsync(id));
 
-    [HttpPost("{id:guid}/{chapterNumber:double}")]
+    [HttpPost("{id:guid}/{chapterNumber:double}/download")]
     [MapToApiVersion("1.0")]
     public async Task<IActionResult> DownloadSingleAsync([FromRoute] Guid id, double chapterNumber)
     {

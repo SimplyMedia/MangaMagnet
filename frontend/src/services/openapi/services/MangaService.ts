@@ -147,7 +147,7 @@ export class MangaService {
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/Manga/{id}/{chapterNumber}',
+            url: '/api/Manga/{id}/{chapterNumber}/download',
             path: {
                 'id': id,
                 'chapterNumber': chapterNumber,

@@ -20,4 +20,3 @@ export type { VolumeResponse } from './models/VolumeResponse';
 
 export { MangaService } from './services/MangaService';
 export { MetadataService } from './services/MetadataService';
-export { TestService } from './services/TestService';
