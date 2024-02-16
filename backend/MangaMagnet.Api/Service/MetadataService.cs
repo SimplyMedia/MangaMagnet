@@ -67,6 +67,8 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 			progressTask.Increment();
 		}
 
+		logger.LogDebug("Updated all metadata");
+
 		return updated;
 	}
 

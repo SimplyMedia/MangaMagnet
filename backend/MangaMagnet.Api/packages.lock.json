@@ -81,6 +81,18 @@
           "Npgsql": "8.0.0"
         }
       },
+      "Polly.Extensions": {
+        "type": "Direct",
+        "requested": "[8.3.0, )",
+        "resolved": "8.3.0",
+        "contentHash": "wUjK/vOqq2kaj9WTtBc/tXWykgT3Z5qpvM8ozl6UEBrIsjbatCl6a+AXMZsTwVEyqUKFF9td3aYRmSAaBDtRrQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.0",
+          "Polly.Core": "8.3.0",
+          "System.Diagnostics.DiagnosticSource": "8.0.0"
+        }
+      },
       "Quartz.AspNetCore": {
         "type": "Direct",
         "requested": "[3.8.0, )",
@@ -678,6 +690,19 @@
         "resolved": "1.0.12",
         "contentHash": "f1nye8fMJCYfJeR+Qb7qlcvC8et4Y4TLf2GLfaFoeISgI+yisaJkbNSGfKCpFBNeVF/iPDkyFmr4J28dv342/Q=="
       },
+      "Polly": {
+        "type": "Transitive",
+        "resolved": "8.3.0",
+        "contentHash": "vqAQmLO1gZcS8Ox9Ky+hrq0HxYrYVSBS1vzv6o6RZH3vvECutngIxkUHw9YijbG0QrycxvHo0Hbx0/D7MGgdow==",
+        "dependencies": {
+          "Polly.Core": "8.3.0"
+        }
+      },
+      "Polly.Core": {
+        "type": "Transitive",
+        "resolved": "8.3.0",
+        "contentHash": "A3r4xkWasffyrIJGjA3jWQi86ZGcR9BEbpIIoP9xYRAKYwiaGbKpqpsHdWv5sCeLZdaWpVs7pc4EM8Tei+LluA=="
+      },
       "Quartz": {
         "type": "Transitive",
         "resolved": "3.8.0",
@@ -1163,6 +1188,7 @@
           "ExtendedXmlSerializer": "[3.7.11, )",
           "Microsoft.EntityFrameworkCore": "[8.0.1, )",
           "Microsoft.Extensions.Http": "[8.0.0, )",
+          "Polly": "[8.3.0, )",
           "System.Threading.RateLimiting": "[8.0.0, )"
         }
       }

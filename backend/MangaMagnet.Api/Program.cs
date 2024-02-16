@@ -18,6 +18,8 @@ using MangaMagnet.Core.Progress.Models;
 using MangaMagnet.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Polly;
+using Polly.Retry;
 using Quartz;
 using Quartz.Impl.AdoJobStore;
 using Serilog;
@@ -58,6 +60,13 @@ builder.Services.AddHostedService<BroadcastProgressService>();
 builder.Services.AddScoped<MangaService>();
 builder.Services.AddScoped<MetadataService>();
 builder.Services.AddScoped<DownloadService>();
+
+// Polly
+builder.Services.AddResiliencePipeline("MangaDex-Pipeline", pipelineBuilder =>
+{
+	pipelineBuilder
+		.AddRetry(new RetryStrategyOptions{ MaxRetryAttempts = 3});
+});
 
 
 // Progress services

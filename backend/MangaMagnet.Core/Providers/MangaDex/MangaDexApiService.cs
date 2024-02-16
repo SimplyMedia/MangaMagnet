@@ -14,10 +14,13 @@ using MangaMagnet.Core.Providers.MangaDex.Models.Api.Statistics;
 using MangaMagnet.Core.Providers.MangaDex.Models.Download;
 using MangaMagnet.Core.Util;
 using Microsoft.Extensions.Logging;
+using Polly;
+using Polly.Registry;
+using Polly.Retry;
 
 namespace MangaMagnet.Core.Providers.MangaDex;
 
-public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<MangaDexApiService> logger)
+public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<MangaDexApiService> logger, ResiliencePipelineProvider<string> resiliencePipelineProvider)
 	: SimpleRatelimitedProvider
 {
 	public async Task<List<MangaDexMangaData>> SearchMangaByNameAsync(string input,
@@ -139,14 +142,29 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		{
 			const int limit = 100;
 
-			var response = await func(mangaDexId, offset, limit, cancellationToken);
+			var pipeline = resiliencePipelineProvider.GetPipeline("MangaDex-Pipeline");
 
-			var responseDataCount = response.Data.Count;
+			await pipeline.ExecuteAsync( async cancelToken =>
+			{
+				try
+				{
+					var response = await func(mangaDexId, offset, limit, cancelToken);
 
-			inner.AddRange(response.Data);
+					var responseDataCount = response.Data.Count;
 
-			offset += responseDataCount;
-			doNextRequest = response.Total > offset;
+					inner.AddRange(response.Data);
+
+					offset += responseDataCount;
+					doNextRequest = response.Total > offset;
+				}
+				catch (Exception e)
+				{
+					var page = offset / limit;
+
+					logger.LogWarning("Failed to fetch Page {Page}: {Exception}", page, e.Message);
+					throw;
+				}
+			}, cancellationToken);
 		}
 
 		return inner;

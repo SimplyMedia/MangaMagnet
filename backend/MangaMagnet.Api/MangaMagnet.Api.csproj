@@ -25,6 +25,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+        <PackageReference Include="Polly.Extensions" Version="8.3.0" />
         <PackageReference Include="Quartz.AspNetCore" Version="3.8.0" />
         <PackageReference Include="Quartz.Serialization.Json" Version="3.8.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
