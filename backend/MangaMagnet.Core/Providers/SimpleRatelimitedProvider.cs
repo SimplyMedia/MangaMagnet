@@ -7,7 +7,7 @@ public abstract class SimpleRatelimitedProvider
     protected readonly RateLimiter RateLimiter = new FixedWindowRateLimiter(
         new FixedWindowRateLimiterOptions
         {
-	        Window = TimeSpan.FromSeconds(2),
+	        Window = TimeSpan.FromSeconds(1),
 	        AutoReplenishment = true,
 	        PermitLimit = 5,
 	        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
