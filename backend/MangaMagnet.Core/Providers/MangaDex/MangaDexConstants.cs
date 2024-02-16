@@ -1,15 +1,15 @@
-﻿using System.Text.RegularExpressions;
-using MangaMagnet.Core.Providers.MangaDex.Models;
-using MangaMagnet.Core.Providers.MangaDex.Models.Download;
+﻿using MangaMagnet.Core.Providers.MangaDex.Models.Download;
 using MangaMagnet.Core.Util;
 
 namespace MangaMagnet.Core.Providers.MangaDex;
 
 public static class MangaDexConstants
 {
-	public static string ReportMangaUrl => $"{ApiNetworkBaseUrl}/{ReportEndpoint}";
+	public static string ReportMangaUrl = $"{ApiNetworkBaseUrl}/{ReportEndpoint}";
 
-    public static string SearchMangaByNameUrl => $"{ApiBaseUrl}/{MangaEndpoint}";
+    public static string SearchMangaByNameUrl = $"{ApiBaseUrl}/{MangaEndpoint}";
+
+    public static string FetchMangaCoversUrl = $"{ApiBaseUrl}/{CoverEndpoint}";
 
     public static string FetchMangaMetadataByIdUrl(string mangaDexId) => $"{ApiBaseUrl}/{MangaEndpoint}/{mangaDexId}";
 
@@ -22,12 +22,13 @@ public static class MangaDexConstants
     public static string DownloadMangaChapterPageUrl(string baseUrl, MangaDexQuality quality, string chapterHash, string fileName)
 	    => $"{baseUrl}/{quality.GetDisplayName()}/{chapterHash}/{fileName}";
 
-    private static string ApiBaseUrl => "https://api.mangadex.org";
-    private static string MangaEndpoint => "manga";
-    private static string StatisticsEndpoint => "statistics";
-    private static string ChapterEndpoint => "feed";
-    private static string AtHomeEndpoint => "at-home";
-    private static string ServerEndpoint => "server";
-    private static string ApiNetworkBaseUrl => "https://api.mangadex.network";
-    private static string ReportEndpoint => "report";
+    private const string ApiBaseUrl = "https://api.mangadex.org";
+    private const string MangaEndpoint = "manga";
+    private const string StatisticsEndpoint = "statistics";
+    private const string CoverEndpoint = "cover";
+    private const string ChapterEndpoint = "feed";
+    private const string AtHomeEndpoint = "at-home";
+    private const string ServerEndpoint = "server";
+    private const string ApiNetworkBaseUrl = "https://api.mangadex.network";
+    private const string ReportEndpoint = "report";
 }
