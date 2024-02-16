@@ -18,7 +18,9 @@ public class MangaDexMetadataFetcher(MangaDexApiService mangaDexApiService, Mang
 
         var mangaDexStatistic = await mangaDexApiService.FetchMangaStatisticsAsync(id, cancellationToken);
 
-        return mangaDexConverterService.ConvertToMangaMetadataResult(mangaDexMangaData, mangaDexStatistic.Statistics.First().Value);
+        var mangaDexCovers = await mangaDexApiService.FetchMangaCoversAsync(id, cancellationToken);
+
+        return mangaDexConverterService.ConvertToMangaMetadataResult(mangaDexMangaData, mangaDexStatistic.Statistics.First().Value, mangaDexCovers);
     }
 
     public async Task<List<ChapterMetadataResult>> FetchAllChapterMetadataAsync(string id, CancellationToken cancellationToken = default)

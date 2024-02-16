@@ -2,6 +2,7 @@
 using MangaMagnet.Core.Metadata;
 using MangaMagnet.Core.Providers.MangaDex.Models;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Covers;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api.Manga;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api.Statistics;
 
@@ -17,12 +18,12 @@ public class MangaDexConverterService
             manga.Attributes.Links?.MangaUpdates,
             manga.Attributes.Title.First().Value,
             manga.Attributes.Description.En,
-            GetCoverUrl(manga),
+            GetLatestCoverUrl(manga),
             ConvertMangaDexStatusToMangaStatus(manga.Attributes.Status),
             manga.Attributes.Year
         );
 
-    public MangaMetadataResult ConvertToMangaMetadataResult(MangaDexResponse<MangaDexMangaData> mangaDexMangaData, MangaDexStatistics mangaDexStatistics)
+    public MangaMetadataResult ConvertToMangaMetadataResult(MangaDexResponse<MangaDexMangaData> mangaDexMangaData, MangaDexStatistics mangaDexStatistics, List<MangaDexCover> covers)
     {
 	    var mangaDexData = mangaDexMangaData.Data;
 	    var attributes = mangaDexData.Attributes;
@@ -72,7 +73,7 @@ public class MangaDexConverterService
 		    genres,
 		    tags,
 		    mangaDexStatistics.Rating.Average ?? mangaDexStatistics.Rating.Bayesian ?? 0.0,
-		    GetCoverUrl(mangaDexData),
+		    GetFirstCoverUrl(mangaDexData, covers),
 		    GetAnilistId(mangaDexData),
 		    mangaDexData.Id,
 		    attributes.Links?.MangaUpdates,
@@ -108,16 +109,23 @@ public class MangaDexConverterService
 		return author;
 	}
 
-    private static string? GetCoverUrl(MangaDexMangaData manga)
+	private static string? GetFirstCoverUrl(MangaDexMangaData manga, List<MangaDexCover> covers)
+	{
+		var coverArtFileName =
+			covers.Where(c => c.Type == "cover_art").MinBy(a => a.Attributes.Volume)?.Attributes.FileName;
+
+		return string.IsNullOrEmpty(coverArtFileName)
+			? GetLatestCoverUrl(manga)
+			: MangaDexConstants.MangaCoverImageUrl(manga.Id, coverArtFileName, MangaDexCoverUrlQuality.ORIGINAL);
+	}
+
+    private static string? GetLatestCoverUrl(MangaDexMangaData manga)
     {
         var coverArtFileName = manga.Relationships.FirstOrDefault(r => r.Type == "cover_art")?.Attributes.FileName;
 
-        string? coverUrl = null;
-
-        if (!string.IsNullOrEmpty(coverArtFileName))
-            coverUrl = $"https://uploads.mangadex.org/covers/{manga.Id}/{coverArtFileName}.512.jpg";
-
-        return coverUrl;
+        return string.IsNullOrEmpty(coverArtFileName)
+	        ? null
+	        : MangaDexConstants.MangaCoverImageUrl(manga.Id, coverArtFileName, MangaDexCoverUrlQuality.ORIGINAL);
     }
 
     private static MangaStatus? ConvertMangaDexStatusToMangaStatus(string status)

@@ -2,7 +2,7 @@
 
 namespace MangaMagnet.Core.Providers.MangaDex.Models.Api.Chapter;
 
-public record MangaDexChapterResponse<T>(
+public record MangaDexPagedResponse<T>(
 	string Result,
 	string? Response,
 	T Data,

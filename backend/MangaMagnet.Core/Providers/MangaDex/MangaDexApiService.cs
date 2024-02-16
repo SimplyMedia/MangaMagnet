@@ -7,6 +7,7 @@ using MangaMagnet.Core.Providers.MangaDex.Models;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api.Chapter;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api.ChapterPages;
+using MangaMagnet.Core.Providers.MangaDex.Models.Api.Covers;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api.Manga;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api.Report;
 using MangaMagnet.Core.Providers.MangaDex.Models.Api.Statistics;
@@ -64,29 +65,13 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		=> SendAndParseGetRequestAsync<MangaDexStatisticResponse>(MangaDexConstants.FetchMangaStatisticsUrl(mangaDexId),
 			false, cancellationToken);
 
-	public async Task<List<MangaDexChapter>> FetchAllMangaChaptersAsync(string mangaDexId,
+	public Task<List<MangaDexCover>> FetchMangaCoversAsync(string mangaDexId,
 		CancellationToken cancellationToken = default)
-	{
-		var doNextRequest = true;
-		var offset = 0;
-		var chapters = new List<MangaDexChapter>();
+		=> FetchAllPagesAsync(mangaDexId, FetchMangaCoverAsync, cancellationToken);
 
-		while (doNextRequest)
-		{
-			const int limit = 500;
-
-			var response = await FetchMangaChapterPageAsync(mangaDexId, offset, limit, cancellationToken);
-
-			var responseDataCount = response.Data.Count;
-
-			chapters.AddRange(response.Data);
-
-			offset += responseDataCount;
-			doNextRequest = response.Total > offset;
-		}
-
-		return chapters;
-	}
+	public Task<List<MangaDexChapter>> FetchAllMangaChaptersAsync(string mangaDexId,
+		CancellationToken cancellationToken = default)
+		=> FetchAllPagesAsync(mangaDexId, FetchMangaChapterPageAsync, cancellationToken);
 
 	public async Task<List<MangaDexChapter>> FetchLatestMangaChaptersAsync(string mangaDexId,
 		CancellationToken cancellationToken = default)
@@ -129,7 +114,45 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		return paths;
 	}
 
-	private async Task<MangaDexChapterResponse<List<MangaDexChapter>>> FetchMangaChapterPageAsync(string mangaDexId,
+	private Task<MangaDexPagedResponse<List<MangaDexCover>>> FetchMangaCoverAsync(string mangaDexId, int offset, int limit, CancellationToken cancellationToken = default)
+	{
+		var queryParams = new NameValueCollection
+		{
+			{ "order[volume]", "asc" },
+			{ "manga[]", mangaDexId },
+			{ "limit", limit.ToString()},
+			{ "offset", offset.ToString() },
+		};
+
+		var requestUri = UriUtils.BuildUrlWithQueryString(MangaDexConstants.FetchMangaCoversUrl, queryParams);
+
+		return SendAndParseGetRequestAsync<MangaDexPagedResponse<List<MangaDexCover>>>(requestUri, false, cancellationToken);
+	}
+
+	private async Task<List<T>> FetchAllPagesAsync<T>(string mangaDexId, Func<string, int, int, CancellationToken, Task<MangaDexPagedResponse<List<T>>>> func, CancellationToken cancellationToken = default)
+	{
+		var doNextRequest = true;
+		var offset = 0;
+		var inner = new List<T>();
+
+		while (doNextRequest)
+		{
+			const int limit = 100;
+
+			var response = await func(mangaDexId, offset, limit, cancellationToken);
+
+			var responseDataCount = response.Data.Count;
+
+			inner.AddRange(response.Data);
+
+			offset += responseDataCount;
+			doNextRequest = response.Total > offset;
+		}
+
+		return inner;
+	}
+
+	private Task<MangaDexPagedResponse<List<MangaDexChapter>>> FetchMangaChapterPageAsync(string mangaDexId,
 		int offset,
 		int limit,
 		CancellationToken cancellationToken = default)
@@ -151,8 +174,8 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		var requestUri =
 			UriUtils.BuildUrlWithQueryString(MangaDexConstants.FetchMangaChapterUrl(mangaDexId), queryParams);
 
-		return await SendAndParseGetRequestAsync<MangaDexChapterResponse<List<MangaDexChapter>>>(requestUri, false,
-			cancellationToken);;
+		return SendAndParseGetRequestAsync<MangaDexPagedResponse<List<MangaDexChapter>>>(requestUri, false,
+			cancellationToken);
 	}
 
 	private async Task<string> DownloadAndWritePageToDiskAsync(string baseUrl, MangaDexQuality quality, string fileName,
@@ -197,7 +220,7 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 		{
 			var stopwatch = Stopwatch.StartNew();
 
-			var response = await SendRequestAsync(request, true, true, cancellationToken);
+			var response = await SendRequestAsync(request, true, cancellationToken);
 			success = true;
 
 			response.Headers.TryGetValues("X-Cache", out var cacheHeader);
@@ -236,37 +259,32 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 
 		request.Content = JsonContent.Create(requestBody, new MediaTypeHeaderValue("application/json"));
 
-		await SendRequestAsync(request, true, false, cancellationToken);
+		await SendRequestAsync(request, true, cancellationToken);
 
 		logger.LogDebug("Sent image download report to MangaDex");
 	}
 
-	private async Task<T> SendAndParseGetRequestAsync<T>(string requestUri, bool useRealHeaders = false,
-		CancellationToken cancellationToken = default)
+	private async Task<T> SendAndParseGetRequestAsync<T>(string requestUri, bool ignoreRateLimit, CancellationToken cancellationToken = default)
 	{
 		using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-		return await SendAndParseRequestAsync<T>(request, useRealHeaders, cancellationToken);
+		return await SendAndParseRequestAsync<T>(request, ignoreRateLimit, cancellationToken);
 	}
 
-	private async Task<T> SendAndParseRequestAsync<T>(HttpRequestMessage request, bool
-			useRealHeaders = false,
-		CancellationToken cancellationToken = default)
+	private async Task<T> SendAndParseRequestAsync<T>(HttpRequestMessage request, bool ignoreRateLimit, CancellationToken cancellationToken = default)
 	{
-		using var responseMessage = await SendRequestAsync(request, useRealHeaders, false, cancellationToken);
+		using var responseMessage = await SendRequestAsync(request, ignoreRateLimit, cancellationToken);
 
 		return await responseMessage.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken) ??
 		       throw new Exception("Failed to deserialize response");
 	}
 
-	private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, bool useRealHeaders = false, bool ignoreRateLimit = false,
+	private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request, bool ignoreRateLimit = false,
 		CancellationToken cancellationToken = default)
 	{
 		logger.LogDebug("Request Uri: {Request}", request.RequestUri);
 
-		var headers = useRealHeaders ? MangaDexHeaderUtil.GetRealHeaders() : MangaDexHeaderUtil.GetFakeHeaders();
-
-		foreach (var (key, value) in headers)
+		foreach (var (key, value) in MangaDexHeaderUtil.GetHeaders())
 			request.Headers.Add(key, value);
 
 		if (!ignoreRateLimit)
@@ -285,8 +303,4 @@ public class MangaDexApiService(IHttpClientFactory httpClientFactory, ILogger<Ma
 
 		return response;
 	}
-}
-
-public class MangaDexCoverResponse
-{
 }
