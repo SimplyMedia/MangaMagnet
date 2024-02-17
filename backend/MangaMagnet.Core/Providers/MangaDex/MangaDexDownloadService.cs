@@ -25,7 +25,7 @@ public class MangaDexDownloadService(ILogger<MangaDexDownloadService> logger, Ma
 		int? volume = string.IsNullOrEmpty(attributes.Volume) ? null : int.Parse(attributes.Volume);
 		var scanlationGroup = relationships.First(x => x.Type == "scanlation_group").Attributes.Name;
 
-		var tempPageFolder = $"{Path.GetTempPath()}/MangaMagnet-{Guid.NewGuid().ToString()}";
+		var tempPageFolder = Path.Combine(Path.GetTempPath(), $"MangaMagnet-{Guid.NewGuid().ToString()}");
 
 		await Task.Run(() => Directory.CreateDirectory(tempPageFolder), cancellationToken);
 		logger.LogDebug("Created temporary directory {Path}", tempPageFolder);
