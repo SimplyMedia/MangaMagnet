@@ -13,6 +13,8 @@ using MangaMagnet.Core.CBZ;
 using MangaMagnet.Core.CBZ.ComicInfo;
 using MangaMagnet.Core.Database;
 using MangaMagnet.Core.Download;
+using MangaMagnet.Core.Local;
+using MangaMagnet.Core.Local.Parsing;
 using MangaMagnet.Core.Progress;
 using MangaMagnet.Core.Progress.Models;
 using MangaMagnet.Core.Services;
@@ -56,10 +58,12 @@ builder.Services.AddMangaDexServices();
 builder.Services.AddSingleton<EntityConverterService>();
 builder.Services.AddSingleton<CbzService>();
 builder.Services.AddSingleton<ComicInfoService>();
+builder.Services.AddSingleton<IFileNameParser, MangaFileNameParser>();
 builder.Services.AddHostedService<BroadcastProgressService>();
 builder.Services.AddScoped<MangaService>();
 builder.Services.AddScoped<MetadataService>();
 builder.Services.AddScoped<DownloadService>();
+builder.Services.AddScoped<LocalFileService>();
 
 // Polly
 builder.Services.AddResiliencePipeline("MangaDex-Pipeline", pipelineBuilder =>

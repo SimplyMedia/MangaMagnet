@@ -35,7 +35,7 @@ public class DownloadService(ILogger<DownloadService> logger, CbzService cbzServ
 
 		task.Description = $"Compressing Pages into .cbz";
 
-		var fileName = $"{mangaMetadata.DisplayTitle} {chapterNumber}";
+		var fileName = $"{mangaMetadata.DisplayTitle} {chapterNumber} (Scan) ({metadata.ScanlationGroup})";
 
 		await cbzService.CreateAsync(tempPath, outputPath, fileName, cancellationToken);
 

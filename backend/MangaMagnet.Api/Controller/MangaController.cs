@@ -52,6 +52,14 @@ public class MangaController(MangaService mangaService) : ControllerBase
 	    return NoContent();
     }
 
+    [HttpPost("{id:guid}/verify-local")]
+    [MapToApiVersion("1.0")]
+    public async Task<IActionResult> VerifyLocalFilesAsync([FromRoute] Guid id)
+    {
+	    await mangaService.VerifyLocalFilesAsync(id);
+	    return NoContent();
+    }
+
     [HttpDelete("{id:guid}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(MangaResponse), (int)HttpStatusCode.OK)]

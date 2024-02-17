@@ -78,6 +78,7 @@ public class MetadataService(ILogger<MetadataService> logger, IMetadataFetcher m
 
 		var mangaMetadata = await dbContext.MangaMetadata
 			.Include(mangaMetadata => mangaMetadata.ChapterMetadata)
+			.Where(metadata => metadata.Status != MangaStatus.Completed)
 			.ToListAsync(cancellationToken);
 
 		progressTask.Total = mangaMetadata.Count;

@@ -6,7 +6,7 @@ public class LocalChapter : ICreatable, IUpdatable
 {
     public Guid Id { get; set; }
 
-    public float ChapterNumber { get; set; }
+    public double ChapterNumber { get; set; }
 
     public string Path { get; set; } = default!;
 

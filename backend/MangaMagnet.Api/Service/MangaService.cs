@@ -2,11 +2,13 @@
 using MangaMagnet.Api.Models.Response;
 using MangaMagnet.Core.Database;
 using MangaMagnet.Core.Download;
+using MangaMagnet.Core.Local;
+using MangaMagnet.Core.Progress;
 using Microsoft.EntityFrameworkCore;
 
 namespace MangaMagnet.Api.Service;
 
-public class MangaService(ILogger<MangaService> logger, BaseDatabaseContext dbContext, EntityConverterService entityConverterService, MetadataService metadataService, DownloadService downloadService)
+public class MangaService(ILogger<MangaService> logger, BaseDatabaseContext dbContext, EntityConverterService entityConverterService, MetadataService metadataService, DownloadService downloadService, LocalFileService localFileService, ProgressService progressService)
 {
     public async Task<MangaResponse> CreateAsync(string mangaDexId, string path, CancellationToken cancellationToken = default)
     {
@@ -75,12 +77,29 @@ public class MangaService(ILogger<MangaService> logger, BaseDatabaseContext dbCo
         return entityConverterService.ConvertLocalMangaToResponse(localManga);
     }
 
-    public async Task DownloadChapterAsync(Guid id, double chapterNumber)
+    public async Task DownloadChapterAsync(Guid id, double chapterNumber, CancellationToken cancellationToken = default)
     {
 	    var localManga = await dbContext.LocalMangas
 		    .Include(m => m.Metadata)
-		    .FirstOrDefaultAsync(m => m.Id == id) ?? throw new NotFoundException("Manga not found");
+		    .FirstOrDefaultAsync(m => m.Id == id, cancellationToken: cancellationToken)
+	                     ?? throw new NotFoundException("Manga not found");
 
-	    await downloadService.DownloadChapterAsCBZAsync(id, chapterNumber, localManga.Path);
+	    await downloadService.DownloadChapterAsCBZAsync(id, chapterNumber, localManga.Path, cancellationToken);
+
+	    await VerifyLocalFilesAsync(id, cancellationToken);
     }
+
+    public async Task VerifyLocalFilesAsync(Guid id, CancellationToken cancellationToken = default)
+	{
+	    var localManga = await dbContext.LocalMangas
+		    .Include(m => m.Metadata)
+		    .Include(m => m.Chapters)
+		    .Include(m => m.Volumes)
+		    .FirstOrDefaultAsync(m => m.Id == id, cancellationToken: cancellationToken)
+	                     ?? throw new NotFoundException("Manga not found");
+
+	    using var progressTask = progressService.CreateTask("Verify Local Files");
+
+	    await localFileService.VerifyLocalVolumeAndChapters(localManga, progressTask, cancellationToken);
+	}
 }

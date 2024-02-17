@@ -109,10 +109,20 @@ public class MangaDexConverterService
 		return author;
 	}
 
-	private static string? GetFirstCoverUrl(MangaDexMangaData manga, List<MangaDexCover> covers)
+	private static string? GetFirstCoverUrl(MangaDexMangaData manga, IEnumerable<MangaDexCover> covers)
 	{
-		var coverArtFileName =
-			covers.Where(c => c.Type == "cover_art").MinBy(a => a.Attributes.Volume)?.Attributes.FileName;
+		var coverArtFileName = covers
+				.Where(c => c.Type == "cover_art")
+				.OrderBy(c => c.Attributes.Volume)
+				.ThenBy(c =>
+					c.Attributes.Locale switch
+					{
+						"ja" => 0,
+						"en" => 1,
+						_ => 2,
+					})
+				.FirstOrDefault()?
+				.Attributes.FileName;
 
 		return string.IsNullOrEmpty(coverArtFileName)
 			? GetLatestCoverUrl(manga)
