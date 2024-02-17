@@ -1,21 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTasks } from "@/services/websocket";
+import { ProgressTask } from "@/services/openapi";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 export const TaskList = () => {
-	const tasks = useTasks();
+	const tasks: Array<ProgressTask> = useTasks();
+
+    const [visible, setVisible] = useState<boolean>(true);
 	const maxShownTasks = 5;
 	const shownTasks = tasks.length > maxShownTasks ? tasks.slice(0, maxShownTasks) : tasks;
 
     return (
         <>
             {tasks.length > 0 && (
-                <div>
-                    <div className="text-xs flex align-middle space-x-2 items-center">
+                <div className="fixed bottom-0 w-48 px-4 bg-[#2d2d30]">
+                    <div className="text-xs flex align-middle space-x-2 items-center cursor-pointer" onClick={() => setVisible(!visible)}>
                         <hr className="flex-1 border-gray-500" />
                         <span className="text-gray-500">Tasks {tasks.length > maxShownTasks && `(${tasks.length})`}</span>
                         <hr className="flex-1 border-gray-500" />
+                        <div className={`bg-gray-600 w-[1.5em] h-[1.5em] text-[0.75em] cursor-pointer flex items-center justify-center radius-100 arrow rotate ${visible && 'rotate-180'}`}>
+                            <FontAwesomeIcon icon={faChevronDown}/>
+                        </div>
                     </div>
-                    <div className="flex flex-col space-y-2">
+                    <div className={`flex flex-col space-y-2 ${visible ? '' : 'hidden'}`}>
                         {shownTasks.map(i => (
                             <div key={i.id}>
                                 <div className="flex text-xs font-semibold text-gray-400">

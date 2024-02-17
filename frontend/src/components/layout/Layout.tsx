@@ -33,9 +33,10 @@ export const Layout = ({children}: React.PropsWithChildren) => {
 
 					</div>
 				</div>
-
-				<TaskList/>
 			</div>
+
+			<TaskList/>
+
 			<main className={"flex-1"}>
 				{children}
 			</main>
