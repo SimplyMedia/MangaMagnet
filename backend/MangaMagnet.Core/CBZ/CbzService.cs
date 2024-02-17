@@ -7,6 +7,11 @@ public class CbzService(ILogger<CbzService> logger)
 {
 	public async Task CreateAsync(string imagePath, string outputDirectory, string fileName, CancellationToken cancellationToken = default)
 	{
+		if (!Directory.Exists(outputDirectory))
+		{
+			Directory.CreateDirectory(outputDirectory);
+		}
+
 		var outputPathZip = Path.Combine(outputDirectory, $"{fileName}.zip");
 
 		await Task.Run(() => ZipFile.CreateFromDirectory(imagePath, outputPathZip, CompressionLevel.SmallestSize, false), cancellationToken);
